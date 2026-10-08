@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Layers, Mail, Lock, ShieldCheck, ArrowRight, ArrowLeft, KeyRound, Timer, Building2, Globe2, ScanFace } from 'lucide-react';
+import { Layers, Mail, Lock, ShieldCheck, ArrowRight, ArrowLeft, KeyRound, Timer, Building2, Globe2, ScanFace, Map } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
@@ -174,7 +174,7 @@ export default function LoginPage() {
                   
                   <div className="relative z-10 flex gap-4">
                     <div className="w-10 h-10 shrink-0 rounded-[14px] bg-gradient-to-br from-emerald-400/10 to-emerald-900/30 border border-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-[0_0_15px_rgba(52,211,153,0.1)] group-hover:shadow-[0_0_20px_rgba(52,211,153,0.2)]">
-                      <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                      <Map className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div>
                       <h3 className="font-bold text-white text-sm tracking-tight mb-1 group-hover:text-emerald-300 transition-colors">Real-Time Tracking Agent</h3>
