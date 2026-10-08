@@ -495,37 +495,39 @@ export default function TrackingPage() {
           </div>
         )}
 
-        {/* DARK MODE RADAR MAP - LIVE TRACKING MODAL */}
+        {/* LIGHT MODE RADAR MAP - LIVE TRACKING MODAL */}
         {selectedTrip && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-0 sm:p-6">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/90 backdrop-blur-xl" onClick={() => setSelectedTrip(null)} />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setSelectedTrip(null)} />
             <motion.div 
               initial={{ scale: 0.98, opacity: 0 }} 
               animate={{ scale: 1, opacity: 1 }} 
               exit={{ scale: 0.98, opacity: 0 }} 
-              className="bg-[#0B101A] sm:rounded-[32px] w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-6xl shadow-2xl relative z-10 flex flex-col border border-slate-800 overflow-hidden"
+              className="bg-white sm:rounded-[32px] w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-6xl shadow-2xl relative z-10 flex flex-col border border-slate-200 overflow-hidden"
             >
-              {/* Dark Header */}
-              <div className="flex justify-between items-center p-6 border-b border-slate-800 bg-[#0F1623]">
+              {/* Header */}
+              <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50/50">
                 <div className="flex items-center gap-4">
-                  <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10B981]"></div>
+                  <div className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                  </div>
                   <div>
-                    <h2 className="text-lg font-mono font-bold text-white tracking-widest">{selectedTrip.id} // LIVE TELEMETRY</h2>
-                    <p className="text-xs font-mono text-slate-400 uppercase mt-1">Driver: {selectedTrip.driver} • Link Encrypted</p>
+                    <h2 className="text-lg font-bold text-slate-900">{selectedTrip.id} // LIVE TELEMETRY</h2>
+                    <p className="text-xs font-mono text-slate-500 uppercase mt-1">Driver: {selectedTrip.driver} • Link Encrypted</p>
                   </div>
                 </div>
-                <button onClick={() => setSelectedTrip(null)} className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-xl transition-colors"><X className="w-6 h-6" /></button>
+                <button onClick={() => setSelectedTrip(null)} className="p-2 bg-white hover:bg-slate-100 text-slate-500 rounded-xl transition-colors border border-slate-200 shadow-sm"><X className="w-5 h-5" /></button>
               </div>
 
-              {/* Radar Map Content */}
-              <div className="flex-1 relative bg-[#06090F] min-h-[500px] flex items-center justify-center overflow-hidden">
+              {/* Radar Map Content - Light Mode */}
+              <div className="flex-1 relative bg-slate-50 min-h-[500px] flex items-center justify-center overflow-hidden">
                 {/* Simulated Radar Circles */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
-                  <div className="w-[800px] h-[800px] rounded-full border border-emerald-500/30 absolute"></div>
-                  <div className="w-[600px] h-[600px] rounded-full border border-emerald-500/30 absolute"></div>
-                  <div className="w-[400px] h-[400px] rounded-full border border-emerald-500/30 absolute"></div>
-                  <div className="w-full h-[1px] bg-emerald-500/20 absolute"></div>
-                  <div className="h-full w-[1px] bg-emerald-500/20 absolute"></div>
+                <div className="absolute inset-0 flex items-center justify-center opacity-40 pointer-events-none">
+                  <div className="w-[800px] h-[800px] rounded-full border border-indigo-200 absolute"></div>
+                  <div className="w-[600px] h-[600px] rounded-full border border-indigo-200 absolute"></div>
+                  <div className="w-[400px] h-[400px] rounded-full border border-indigo-200 absolute"></div>
+                  <div className="w-full h-[1px] bg-indigo-200 absolute"></div>
+                  <div className="h-full w-[1px] bg-indigo-200 absolute"></div>
                 </div>
 
                 {/* Simulated Route Line */}
@@ -533,52 +535,52 @@ export default function TrackingPage() {
                   <path 
                     d="M 200 400 Q 400 200, 700 300 T 1000 200" 
                     fill="none" 
-                    stroke="rgba(16, 185, 129, 0.3)" 
+                    stroke="rgba(79, 70, 229, 0.4)" 
                     strokeWidth="3" 
                     strokeDasharray="10 5" 
                   />
                   {/* Current Position Marker */}
                   <motion.circle 
                     cx="550" cy="280" r="6" 
-                    fill="#10B981" 
+                    fill="#4F46E5" 
                     initial={{ scale: 1 }}
-                    animate={{ scale: [1, 2, 1], opacity: [1, 0.5, 1] }}
+                    animate={{ scale: [1, 1.5, 1], opacity: [1, 0.7, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   />
-                  <circle cx="550" cy="280" r="24" fill="rgba(16, 185, 129, 0.2)" />
+                  <circle cx="550" cy="280" r="24" fill="rgba(79, 70, 229, 0.1)" />
                 </svg>
 
                 {/* Floating Widgets */}
-                <div className="absolute top-6 left-6 bg-[#0F1623]/90 backdrop-blur-md border border-slate-800 p-5 rounded-2xl w-72">
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-800 pb-2">Navigational Data</h4>
+                <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-md border border-slate-200 shadow-lg p-5 rounded-2xl w-72">
+                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Navigational Data</h4>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-xs text-slate-500 font-mono">Velocity</span>
-                      <span className="text-sm font-mono font-bold text-emerald-400">{selectedTrip.speed}</span>
+                      <span className="text-xs font-bold text-slate-500">Velocity</span>
+                      <span className="text-sm font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md border border-indigo-100">{selectedTrip.speed}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-xs text-slate-500 font-mono">Heading</span>
-                      <span className="text-sm font-mono font-bold text-white">042° NE</span>
+                      <span className="text-xs font-bold text-slate-500">Heading</span>
+                      <span className="text-sm font-mono font-bold text-slate-700">042° NE</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-xs text-slate-500 font-mono">GPS Precision</span>
-                      <span className="text-sm font-mono font-bold text-white">±1.2m</span>
+                      <span className="text-xs font-bold text-slate-500">GPS Precision</span>
+                      <span className="text-sm font-mono font-bold text-slate-700">±1.2m</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="absolute bottom-6 right-6 bg-[#0F1623]/90 backdrop-blur-md border border-slate-800 p-5 rounded-2xl w-80">
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 border-b border-slate-800 pb-2">Transit Progress</h4>
+                <div className="absolute bottom-6 right-6 bg-white/90 backdrop-blur-md border border-slate-200 shadow-lg p-5 rounded-2xl w-80">
+                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Transit Progress</h4>
                   <div className="flex justify-between items-end mb-2">
-                    <span className="text-xs font-bold text-white">{selectedTrip.origin}</span>
-                    <span className="text-xs font-bold text-white">{selectedTrip.dest}</span>
+                    <span className="text-xs font-bold text-slate-700">{selectedTrip.origin}</span>
+                    <span className="text-xs font-bold text-slate-700">{selectedTrip.dest}</span>
                   </div>
-                  <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mb-4">
-                    <div className="h-full bg-emerald-500" style={{ width: `${selectedTrip.progress}%` }}></div>
+                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-4">
+                    <div className="h-full bg-emerald-500 transition-all duration-1000" style={{ width: `${selectedTrip.progress}%` }}></div>
                   </div>
-                  <div className="flex justify-between items-center bg-[#151D2C] p-3 rounded-lg border border-slate-800">
-                    <span className="text-xs text-slate-400 font-mono">Updated ETA</span>
-                    <span className={`text-sm font-mono font-bold ${selectedTrip.status === 'Delayed' ? 'text-amber-500' : 'text-emerald-400'}`}>{selectedTrip.eta}</span>
+                  <div className="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <span className="text-xs font-bold text-slate-500 uppercase">Updated ETA</span>
+                    <span className={`text-sm font-mono font-bold ${selectedTrip.status === 'Delayed' ? 'text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200' : 'text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200'}`}>{selectedTrip.eta}</span>
                   </div>
                 </div>
 
