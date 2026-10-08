@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plane, Ship, Package, Calculator, BrainCircuit, CheckCircle, ArrowRight, ShieldCheck, Banknote, Clock, Activity, Globe2, Network, Leaf, TrendingDown, ArrowUpRight } from 'lucide-react';
+import { Plane, Ship, Package, Calculator, BrainCircuit, CheckCircle, ShieldCheck, Banknote, Clock, Activity, Globe2, Network, Leaf, ArrowUpRight } from 'lucide-react';
 
 export default function RouteManagementPage() {
   const [isEvaluating, setIsEvaluating] = useState(false);

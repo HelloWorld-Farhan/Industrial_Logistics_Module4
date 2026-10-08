@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useLocation, useOutlet, useNavigate } from 'react-router-dom';
-import { Layers, Map, Compass, MonitorStop, LineChart, LogOut, Menu, X, Settings } from 'lucide-react';
+import { Layers, Map, Compass, MonitorStop, LogOut, Menu, X, Settings } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TopHeader } from './TopHeader';

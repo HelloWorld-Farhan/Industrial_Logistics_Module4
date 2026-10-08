@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { MonitorStop, AlertTriangle, ArrowRightLeft, ArrowDownToLine, ArrowUpFromLine, CheckCircle, Factory, Activity, Zap, RefreshCw, Database, Network, ServerCog } from 'lucide-react';
 
 export default function ConsolidatedTrackerPage() {
