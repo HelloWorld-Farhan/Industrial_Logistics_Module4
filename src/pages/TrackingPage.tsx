@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Truck, Plus, MapPin, CheckCircle, Clock, Search, X, Activity, UserPlus, FileSpreadsheet, BarChart3, TrendingUp, ShieldCheck, Radio, AlertTriangle } from 'lucide-react';
+import { Truck, Plus, MapPin, CheckCircle, Clock, Search, X, Activity, UserPlus, FileSpreadsheet, BarChart3, TrendingUp, ShieldCheck, Radio, AlertTriangle, QrCode, Loader2 } from 'lucide-react';
 
 // Mock Data
 const MOCK_DRIVERS = [
@@ -19,11 +19,31 @@ export default function TrackingPage() {
   const [activeTab, setActiveTab] = useState<'roster' | 'history'>('roster');
   const [isAddDriverModalOpen, setIsAddDriverModalOpen] = useState(false);
   const [isAddTripModalOpen, setIsAddTripModalOpen] = useState(false);
+  const [tripGenerationState, setTripGenerationState] = useState<'idle' | 'generating' | 'success'>('idle');
+  const [generatedToken, setGeneratedToken] = useState('');
   
   // New Modal States
   const [selectedDriver, setSelectedDriver] = useState<typeof MOCK_DRIVERS[0] | null>(null);
   const [selectedTrip, setSelectedTrip] = useState<typeof MOCK_ACTIVE_TRIPS[0] | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const handleGenerateTrip = () => {
+    setTripGenerationState('generating');
+    
+    // Simulate generation delay
+    setTimeout(() => {
+      setGeneratedToken(`TRK-${Math.floor(100000 + Math.random() * 900000)}`);
+      setTripGenerationState('success');
+    }, 2500);
+  };
+
+  const closeTripModal = () => {
+    setIsAddTripModalOpen(false);
+    setTimeout(() => {
+      setTripGenerationState('idle');
+      setGeneratedToken('');
+    }, 300);
+  };
 
   return (
     <div className="flex-1 p-6 lg:p-8 max-w-7xl mx-auto w-full flex flex-col gap-8">
@@ -275,39 +295,96 @@ export default function TrackingPage() {
 
         {isAddTripModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsAddTripModalOpen(false)} />
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-white rounded-[24px] p-8 w-full max-w-md shadow-2xl relative z-10">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={closeTripModal} />
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-white rounded-[24px] p-8 w-full max-w-md shadow-2xl relative z-10 overflow-hidden">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
                   <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center"><Plus className="w-4 h-4 text-indigo-600" /></div>
                   Create Tracking Trip
                 </h3>
-                <button onClick={() => setIsAddTripModalOpen(false)} className="p-2 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl transition-colors"><X className="w-5 h-5" /></button>
+                <button onClick={closeTripModal} className="p-2 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl transition-colors"><X className="w-5 h-5" /></button>
               </div>
-              <div className="space-y-5">
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Assign Driver</label>
-                  <select className="w-full bg-slate-50 border border-slate-200 text-sm rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
-                    <option>Marcus Vance</option>
-                    <option>Sarah Lindqvist</option>
-                  </select>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
+
+              {tripGenerationState === 'idle' && (
+                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="space-y-5">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Origin</label>
-                    <input type="text" placeholder="Start Point" className="w-full bg-slate-50 border border-slate-200 text-sm rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Assign Driver</label>
+                    <select className="w-full bg-slate-50 border border-slate-200 text-sm rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                      <option>Marcus Vance</option>
+                      <option>Sarah Lindqvist</option>
+                    </select>
                   </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Destination</label>
-                    <input type="text" placeholder="End Point" className="w-full bg-slate-50 border border-slate-200 text-sm rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Origin</label>
+                      <input type="text" placeholder="Start Point" className="w-full bg-slate-50 border border-slate-200 text-sm rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Destination</label>
+                      <input type="text" placeholder="End Point" className="w-full bg-slate-50 border border-slate-200 text-sm rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                    </div>
                   </div>
-                </div>
-                <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-sm text-indigo-800">
-                  <p className="font-bold flex items-center gap-2"><Truck className="w-4 h-4" /> Zero-Trust Sync</p>
-                  <p className="mt-1 text-xs opacity-80 leading-relaxed">Creating this trip generates a secure QR code. The driver scans it, tracking begins, and wipes when finished.</p>
-                </div>
-                <button onClick={() => setIsAddTripModalOpen(false)} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-indigo-200 mt-2 transition-transform active:scale-95">Generate Trip Token & QR</button>
-              </div>
+                  <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-sm text-indigo-800">
+                    <p className="font-bold flex items-center gap-2"><Truck className="w-4 h-4" /> Zero-Trust Sync</p>
+                    <p className="mt-1 text-xs opacity-80 leading-relaxed">Creating this trip generates a secure QR code. The driver scans it, tracking begins, and wipes when finished.</p>
+                  </div>
+                  <button 
+                    onClick={handleGenerateTrip} 
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-indigo-200 mt-2 transition-transform active:scale-95"
+                  >
+                    Generate Trip Token & QR
+                  </button>
+                </motion.div>
+              )}
+
+              {tripGenerationState === 'generating' && (
+                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center py-12">
+                  <div className="relative w-20 h-20 mb-6">
+                    <div className="absolute inset-0 rounded-full border-4 border-slate-100"></div>
+                    <div className="absolute inset-0 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <QrCode className="w-8 h-8 text-indigo-500 animate-pulse" />
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900">Provisioning Secure Token</h3>
+                  <p className="text-sm text-slate-500 mt-2 text-center max-w-xs">Generating end-to-end encrypted tracking keys and one-time QR code...</p>
+                </motion.div>
+              )}
+
+              {tripGenerationState === 'success' && (
+                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center text-center">
+                  <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6">
+                    <CheckCircle className="w-10 h-10" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">Trip Generated!</h3>
+                  <p className="text-sm text-slate-500 mb-6">The driver can scan this QR code using the Driver App to instantly sync this trip. No login required.</p>
+                  
+                  <div className="bg-slate-50 border border-slate-200 p-6 rounded-2xl w-full flex flex-col items-center gap-4 mb-6 relative overflow-hidden">
+                    {/* Decorative corner accents */}
+                    <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-slate-300 rounded-tl-xl m-2"></div>
+                    <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-slate-300 rounded-tr-xl m-2"></div>
+                    <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-slate-300 rounded-bl-xl m-2"></div>
+                    <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-slate-300 rounded-br-xl m-2"></div>
+
+                    <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                      <QrCode className="w-32 h-32 text-slate-800" />
+                    </div>
+                    
+                    <div>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Trip Token ID</p>
+                      <p className="font-mono text-2xl font-bold text-indigo-600 bg-indigo-50 px-4 py-1.5 rounded-lg border border-indigo-100 tracking-widest">{generatedToken}</p>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={closeTripModal} 
+                    className="w-full bg-slate-900 hover:bg-slate-800 text-white py-3.5 rounded-xl font-bold shadow-lg transition-transform active:scale-95"
+                  >
+                    Done
+                  </button>
+                </motion.div>
+              )}
+
             </motion.div>
           </div>
         )}
