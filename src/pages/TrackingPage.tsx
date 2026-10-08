@@ -15,6 +15,12 @@ const MOCK_ACTIVE_TRIPS = [
   { id: 'TRK-4402', driver: 'Sarah Lindqvist', origin: 'Berlin Hub', dest: 'Hamburg Dock', progress: 65, status: 'Delayed', speed: '0 km/h', eta: 'Delay 45m' },
 ];
 
+const MOCK_HISTORY_TRIPS = [
+  { id: 'TRK-092', driver: 'Marcus Vance', origin: 'Lyon Depot', dest: 'Paris Hub', date: 'Oct 07, 2026', distance: '460 km', duration: '5h 12m', rating: 'Perfect', incidents: 0, compliance: '100%', fuelEfficiency: '8.2 L/100km', avgSpeed: '88 km/h' },
+  { id: 'TRK-091', driver: 'James Dubois', origin: 'Munich Port', dest: 'Berlin Hub', date: 'Oct 05, 2026', distance: '580 km', duration: '6h 45m', rating: 'Good', incidents: 1, compliance: '94%', fuelEfficiency: '8.8 L/100km', avgSpeed: '85 km/h' },
+  { id: 'TRK-088', driver: 'Sarah Lindqvist', origin: 'Vienna Base', dest: 'Munich Port', date: 'Oct 02, 2026', distance: '430 km', duration: '4h 50m', rating: 'Perfect', incidents: 0, compliance: '100%', fuelEfficiency: '7.9 L/100km', avgSpeed: '91 km/h' },
+];
+
 export default function TrackingPage() {
   const [activeTab, setActiveTab] = useState<'roster' | 'history'>('roster');
   const [isAddDriverModalOpen, setIsAddDriverModalOpen] = useState(false);
@@ -25,6 +31,7 @@ export default function TrackingPage() {
   // New Modal States
   const [selectedDriver, setSelectedDriver] = useState<typeof MOCK_DRIVERS[0] | null>(null);
   const [selectedTrip, setSelectedTrip] = useState<typeof MOCK_ACTIVE_TRIPS[0] | null>(null);
+  const [selectedHistoryTrip, setSelectedHistoryTrip] = useState<typeof MOCK_HISTORY_TRIPS[0] | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleGenerateTrip = () => {
@@ -152,14 +159,78 @@ export default function TrackingPage() {
           </div>
         )}
 
-        {/* Trip History Placeholder */}
+        {/* Trip History View */}
         {activeTab === 'history' && (
-          <div className="p-16 flex flex-col items-center justify-center text-center bg-slate-50/50">
-            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm border border-slate-100">
-              <FileSpreadsheet className="w-10 h-10 text-slate-300" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-900">Historical Trip Data Archive</h3>
-            <p className="text-sm text-slate-500 max-w-md mt-2">All completed and wiped trips are securely archived here for compliance and auditing purposes. No active location tracking is stored.</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-slate-100 bg-slate-50/50">
+                  <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Trip ID / Date</th>
+                  <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Route & Mini-Map</th>
+                  <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Driver</th>
+                  <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider">Metrics</th>
+                  <th className="py-4 px-6 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {MOCK_HISTORY_TRIPS.map((trip) => (
+                  <tr key={trip.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors group">
+                    <td className="py-4 px-6">
+                      <p className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{trip.id}</p>
+                      <p className="text-[10px] text-slate-400 font-mono mt-0.5">{trip.date}</p>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-4">
+                        {/* Static Mini Map Concept */}
+                        <div className="w-16 h-10 bg-indigo-50/50 rounded-lg border border-indigo-100 overflow-hidden relative flex items-center justify-center shrink-0">
+                          <svg className="absolute inset-0 w-full h-full opacity-30" preserveAspectRatio="none">
+                            <path d="M -10 20 Q 20 40, 40 10 T 80 20" fill="none" stroke="#4F46E5" strokeWidth="2" />
+                          </svg>
+                          <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 absolute left-2"></div>
+                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 absolute right-2"></div>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1.5 text-xs font-medium text-slate-700">
+                            <MapPin className="w-3 h-3 text-slate-400" /> {trip.origin}
+                          </div>
+                          <div className="flex items-center gap-1.5 text-xs font-medium text-slate-700 mt-1">
+                            <MapPin className="w-3 h-3 text-emerald-500" /> {trip.dest}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-[9px] uppercase">
+                          {trip.driver.charAt(0)}
+                        </div>
+                        <span className="text-sm font-medium text-slate-700">{trip.driver}</span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="flex gap-3">
+                        <span className="bg-slate-50 border border-slate-100 text-slate-600 px-2 py-1 rounded text-[10px] font-mono font-bold flex items-center gap-1">
+                          <Clock className="w-3 h-3" /> {trip.duration}
+                        </span>
+                        <span className={`border px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 ${
+                          trip.rating === 'Perfect' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-amber-50 text-amber-600 border-amber-200'
+                        }`}>
+                          <ShieldCheck className="w-3 h-3" /> {trip.rating}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-6 text-right">
+                      <button 
+                        onClick={() => setSelectedHistoryTrip(trip)}
+                        className="text-xs font-bold text-slate-600 hover:text-indigo-600 bg-white border border-slate-200 hover:border-indigo-200 px-3 py-1.5 rounded-lg transition-colors shadow-sm"
+                      >
+                        View Info
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </section>
@@ -696,6 +767,154 @@ export default function TrackingPage() {
                   </div>
                 </div>
 
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* POWER BI STYLE HISTORICAL TRIP MODAL */}
+        {selectedHistoryTrip && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setSelectedHistoryTrip(null)} />
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 20 }} 
+              animate={{ scale: 1, opacity: 1, y: 0 }} 
+              exit={{ scale: 0.95, opacity: 0, y: 20 }} 
+              className="bg-slate-100 rounded-[20px] w-full max-w-5xl h-[80vh] shadow-2xl relative z-10 flex flex-col border border-slate-300 overflow-hidden"
+            >
+              {/* Header */}
+              <div className="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center z-20 shrink-0">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg shadow-sm">
+                    <FileSpreadsheet className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900 leading-tight flex items-center gap-2">
+                      Trip Report: {selectedHistoryTrip.id}
+                      <span className="bg-slate-100 text-slate-500 text-[10px] px-2 py-0.5 rounded border border-slate-200 uppercase">Historical View</span>
+                    </h2>
+                    <p className="text-xs font-mono text-slate-500 mt-0.5">Completed: {selectedHistoryTrip.date} | Driver: {selectedHistoryTrip.driver}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm">
+                    <TrendingUp className="w-3.5 h-3.5" /> Export PDF
+                  </button>
+                  <button onClick={() => setSelectedHistoryTrip(null)} className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-lg transition-colors"><X className="w-5 h-5" /></button>
+                </div>
+              </div>
+
+              {/* Dashboard Content */}
+              <div className="flex-1 p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 overflow-hidden bg-slate-100/50">
+                
+                {/* Left Col - Map & Route */}
+                <div className="lg:col-span-1 flex flex-col gap-6">
+                  {/* Map Concept */}
+                  <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-2 flex-1 relative overflow-hidden flex flex-col">
+                    <div className="p-3 border-b border-slate-100 flex items-center gap-2">
+                      <Map className="w-4 h-4 text-indigo-500" />
+                      <span className="text-xs font-bold text-slate-700 uppercase">Archived Route Map</span>
+                    </div>
+                    <div className="flex-1 bg-slate-50 m-2 rounded-lg border border-slate-200 relative overflow-hidden flex items-center justify-center">
+                      {/* Stylized Topographic Map Background */}
+                      <svg className="absolute inset-0 w-full h-full opacity-10" width="100%" height="100%">
+                        <pattern id="topo" width="40" height="40" patternUnits="userSpaceOnUse">
+                          <path d="M 0 20 Q 10 10, 20 20 T 40 20" fill="none" stroke="#000" strokeWidth="0.5" />
+                          <path d="M 0 40 Q 20 20, 40 40" fill="none" stroke="#000" strokeWidth="0.5" />
+                        </pattern>
+                        <rect width="100%" height="100%" fill="url(#topo)" />
+                      </svg>
+                      {/* Route Line */}
+                      <svg className="absolute inset-0 w-full h-full p-4" preserveAspectRatio="xMidYMid meet">
+                        <path d="M 20 80 Q 80 20, 180 50 T 280 80" fill="none" stroke="#4F46E5" strokeWidth="3" strokeDasharray="6 4" />
+                        <circle cx="20" cy="80" r="6" fill="#4F46E5" />
+                        <circle cx="280" cy="80" r="6" fill="#10B981" />
+                      </svg>
+                      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-[9px] font-bold px-2 py-1 rounded shadow-sm border border-slate-100 text-slate-600">Origin: {selectedHistoryTrip.origin}</div>
+                      <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur text-[9px] font-bold px-2 py-1 rounded shadow-sm border border-slate-100 text-emerald-600">Dest: {selectedHistoryTrip.dest}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Col - Metrics */}
+                <div className="lg:col-span-2 flex flex-col gap-6 overflow-hidden">
+                  
+                  {/* Top Stats Grid */}
+                  <div className="grid grid-cols-3 gap-4 shrink-0">
+                    <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Total Distance</span>
+                      <span className="text-2xl font-bold text-slate-900">{selectedHistoryTrip.distance}</span>
+                    </div>
+                    <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Transit Duration</span>
+                      <span className="text-2xl font-bold text-slate-900">{selectedHistoryTrip.duration}</span>
+                    </div>
+                    <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Avg Speed</span>
+                      <span className="text-2xl font-bold text-indigo-600 font-mono">{selectedHistoryTrip.avgSpeed}</span>
+                    </div>
+                  </div>
+
+                  {/* Telemetry Charts */}
+                  <div className="flex-1 bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col min-h-0 relative">
+                    <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-6 flex items-center gap-2 border-b border-slate-100 pb-2">
+                      <Activity className="w-4 h-4 text-emerald-500" /> Post-Trip Telemetry Analysis
+                    </h3>
+                    
+                    <div className="flex-1 grid grid-cols-2 gap-8">
+                      {/* Left: Speed Consistency Line Chart Concept */}
+                      <div className="flex flex-col relative">
+                        <span className="text-[10px] font-bold text-slate-400 mb-4">Velocity Profile (km/h)</span>
+                        <div className="flex-1 relative border-l border-b border-slate-100">
+                          <svg className="absolute inset-0 w-full h-full p-2" preserveAspectRatio="none">
+                            <path d="M 0 80 Q 20 60, 40 70 T 80 40 T 120 50 T 160 20 T 200 40" fill="none" stroke="#10B981" strokeWidth="2" />
+                            <path d="M 0 80 Q 20 60, 40 70 T 80 40 T 120 50 T 160 20 T 200 40 L 200 100 L 0 100 Z" fill="url(#grad)" opacity="0.1" />
+                            <defs>
+                              <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#10B981" />
+                                <stop offset="100%" stopColor="transparent" />
+                              </linearGradient>
+                            </defs>
+                          </svg>
+                        </div>
+                      </div>
+
+                      {/* Right: Metrics */}
+                      <div className="flex flex-col justify-center space-y-6">
+                        <div>
+                          <div className="flex justify-between text-[11px] font-bold mb-1">
+                            <span className="text-slate-500 uppercase">Route Compliance</span>
+                            <span className="text-emerald-500">{selectedHistoryTrip.compliance}</span>
+                          </div>
+                          <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <motion.div initial={{ width: 0 }} animate={{ width: selectedHistoryTrip.compliance }} className="h-full bg-emerald-500" />
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <div className="flex justify-between text-[11px] font-bold mb-1">
+                            <span className="text-slate-500 uppercase">Fuel Efficiency</span>
+                            <span className="text-indigo-600 font-mono">{selectedHistoryTrip.fuelEfficiency}</span>
+                          </div>
+                          <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <motion.div initial={{ width: 0 }} animate={{ width: '82%' }} className="h-full bg-indigo-500" />
+                          </div>
+                        </div>
+
+                        <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle className={`w-4 h-4 ${selectedHistoryTrip.incidents === 0 ? 'text-slate-300' : 'text-amber-500'}`} />
+                            <span className="text-xs font-bold text-slate-600 uppercase">Logged Incidents</span>
+                          </div>
+                          <span className={`text-xl font-bold ${selectedHistoryTrip.incidents === 0 ? 'text-slate-900' : 'text-amber-600'}`}>
+                            {selectedHistoryTrip.incidents}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
               </div>
             </motion.div>
           </div>
