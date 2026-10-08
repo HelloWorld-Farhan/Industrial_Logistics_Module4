@@ -1,318 +1,276 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Map, MapPin, Truck, CheckCircle, Smartphone, QrCode, Timer } from 'lucide-react';
+import { Truck, Plus, MapPin, CheckCircle, Clock, Search, X, Activity, UserPlus, FileSpreadsheet } from 'lucide-react';
+
+// Mock Data
+const MOCK_DRIVERS = [
+  { id: 'DRV-001', name: 'Marcus Vance', phone: '+1 555-0199', trips: 142, rating: 4.9, status: 'Active' },
+  { id: 'DRV-002', name: 'Sarah Lindqvist', phone: '+1 555-0244', trips: 89, rating: 4.7, status: 'Active' },
+  { id: 'DRV-003', name: 'James Dubois', phone: '+1 555-0811', trips: 215, rating: 4.8, status: 'Available' },
+  { id: 'DRV-004', name: 'Elena Rostova', phone: '+1 555-0993', trips: 56, rating: 4.9, status: 'Off-Duty' },
+];
+
+const MOCK_ACTIVE_TRIPS = [
+  { id: 'TRK-9928', driver: 'Marcus Vance', origin: 'Paris Depot', dest: 'Rotterdam Port', progress: 28, status: 'In-Transit', speed: '74 km/h' },
+  { id: 'TRK-4402', driver: 'Sarah Lindqvist', origin: 'Berlin Hub', dest: 'Hamburg Dock', progress: 65, status: 'Delayed', speed: '0 km/h' },
+];
 
 export default function TrackingPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalStep, setModalStep] = useState<'form' | 'loading' | 'qr'>('form');
-  const [phone, setPhone] = useState('');
-  const [isTrackingActive, setIsTrackingActive] = useState(false);
-  const [aiLogs, setAiLogs] = useState<{time: string; message: string; type: 'info' | 'alert' | 'offline'}[]>([]);
-
-  // Simulation timeline when tracking becomes active
-  useEffect(() => {
-    if (isTrackingActive) {
-      setAiLogs([{ time: '17:30', message: 'AI Log: Calculating theoretical perfect route... Expected border arrival: 18:00.', type: 'info' }]);
-      
-      const timer1 = setTimeout(() => {
-        setAiLogs(prev => [...prev, { time: '17:35', message: 'DEVIATION DETECTED: Truck is still 80km away from expected waypoint.', type: 'alert' }]);
-      }, 3000);
-
-      const timer2 = setTimeout(() => {
-        setAiLogs(prev => [...prev, { time: '17:36', message: 'Signal Lost. Driver\'s phone is unresponsive.', type: 'offline' }]);
-      }, 6000);
-
-      const timer3 = setTimeout(() => {
-        setAiLogs(prev => [...prev, { time: '17:40', message: 'Delay Reason: Border customs congestion + Unscheduled 45-min halt. Revised ETA: 21:40.', type: 'alert' }]);
-      }, 9000);
-
-      return () => {
-        clearTimeout(timer1);
-        clearTimeout(timer2);
-        clearTimeout(timer3);
-      };
-    } else {
-      setAiLogs([]);
-    }
-  }, [isTrackingActive]);
-
-  const handleGenerateToken = (e: React.FormEvent) => {
-    e.preventDefault();
-    setModalStep('loading');
-    setTimeout(() => {
-      setModalStep('qr');
-    }, 1500);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setModalStep('form');
-    setPhone('');
-    setIsTrackingActive(true); // Start the tracking simulation on close
-  };
-
-  const handleCompleteTrip = () => {
-    setIsTrackingActive(false);
-    alert("Tracking data saved to central database. Driver's mobile app wiped and reset to zero.");
-  };
+  const [activeTab, setActiveTab] = useState<'roster' | 'history'>('roster');
+  const [isAddDriverModalOpen, setIsAddDriverModalOpen] = useState(false);
+  const [isAddTripModalOpen, setIsAddTripModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <div className="w-full h-full flex flex-col lg:flex-row gap-6 p-4 md:p-6 lg:p-8 bg-slate-50 min-h-0 overflow-y-auto lg:overflow-hidden">
+    <div className="flex-1 p-6 lg:p-8 max-w-7xl mx-auto w-full flex flex-col gap-8">
       
-      {/* Left Column: Shipment Details & Action */}
-      <div className="w-full lg:w-[350px] shrink-0 flex flex-col gap-6">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-slate-800">Active Shipments</h2>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">
-              {isTrackingActive ? '1' : '0'}
-            </div>
-          </div>
-          
-          {!isTrackingActive ? (
-            <div className="text-center py-10 border-2 border-dashed border-slate-100 rounded-xl">
-              <Truck className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-              <p className="text-sm font-medium text-slate-500 mb-4">No active tracking sessions.</p>
-              <button 
-                onClick={() => setIsModalOpen(true)}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-medium transition-all shadow-lg shadow-indigo-200"
-              >
-                Assign Driver & Setup
-              </button>
-            </div>
-          ) : (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              className="bg-slate-50 border border-slate-200 p-4 rounded-xl relative overflow-hidden"
-            >
-              <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500" />
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <h3 className="font-bold text-slate-800 text-sm">Order #TRK-9928</h3>
-                  <p className="text-xs text-slate-500 mt-0.5">Driver: {phone || '+1 555-0199'}</p>
-                </div>
-                <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md text-[10px] font-bold tracking-wider">LIVE</span>
-              </div>
-              
-              <div className="space-y-2 mt-4">
-                <div className="flex items-center gap-2 text-xs">
-                  <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                  <span className="text-slate-600 font-medium truncate">HQ Distribution Center</span>
-                </div>
-                <div className="pl-1.5 h-3 border-l-2 border-dashed border-slate-300 ml-1.5" />
-                <div className="flex items-center gap-2 text-xs">
-                  <MapPin className="w-3.5 h-3.5 text-indigo-500" />
-                  <span className="text-slate-800 font-bold truncate">Western Indian Port</span>
-                </div>
-              </div>
-
-              <button 
-                onClick={handleCompleteTrip}
-                className="w-full mt-5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 py-2 rounded-lg font-medium text-xs transition-colors"
-              >
-                Mark as Reached Destination
-              </button>
-            </motion.div>
-          )}
-        </div>
-
-        {/* AI Terminal Log */}
-        <div className="bg-[#0B0F19] flex-1 rounded-2xl shadow-xl overflow-hidden flex flex-col border border-slate-800">
-          <div className="px-4 py-3 border-b border-slate-800 flex items-center justify-between bg-[#111827]">
-            <div className="flex items-center gap-2 text-white">
-              <Timer className="w-4 h-4 text-emerald-400" />
-              <span className="font-mono text-xs font-semibold tracking-wider">AI AGENT STREAM</span>
-            </div>
-            {isTrackingActive && (
-              <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-            )}
-          </div>
-          <div className="p-4 overflow-y-auto flex-1 font-mono text-[11px] leading-relaxed space-y-3">
-            {aiLogs.length === 0 && (
-              <div className="text-slate-600 flex items-center gap-2">
-                <span>Waiting for active telemetry...</span>
-              </div>
-            )}
-            <AnimatePresence>
-              {aiLogs.map((log, idx) => (
-                <motion.div 
-                  key={idx}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className={`p-2 rounded border-l-2 ${
-                    log.type === 'alert' ? 'bg-rose-500/10 border-rose-500 text-rose-300' : 
-                    log.type === 'offline' ? 'bg-red-500/20 border-red-500 text-red-400 font-bold' : 
-                    'bg-indigo-500/10 border-indigo-500 text-indigo-300'
-                  }`}
-                >
-                  <span className="opacity-50 mr-2">[{log.time}]</span>
-                  {log.message}
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
-        </div>
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+          <Truck className="w-7 h-7 text-indigo-600" />
+          Real-Time Shipment & Truck Tracking Agent
+        </h1>
+        <p className="text-sm text-slate-500 mt-1">Manage driver rosters, assign trip tokens, and monitor live fleet telemetry across all active transits.</p>
       </div>
 
-      {/* Right Column: Live Map Simulation */}
-      <div className="flex-1 bg-slate-900 rounded-2xl overflow-hidden relative shadow-inner border border-slate-800 min-h-[400px]">
-        {/* Decorative Grid */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-        
-        {isTrackingActive ? (
-          <div className="absolute inset-0 flex items-center justify-center">
-            {/* Map Path Simulation */}
-            <svg width="100%" height="100%" className="absolute inset-0 z-0">
-              <path 
-                d="M 100,100 C 200,300 400,200 600,400" 
-                fill="transparent" 
-                stroke="#334155" 
-                strokeWidth="4" 
-                strokeDasharray="8 8"
-              />
-              <path 
-                d="M 100,100 C 200,300 400,200 600,400" 
-                fill="transparent" 
-                stroke="#10B981" 
-                strokeWidth="4"
-                strokeDasharray="600"
-                strokeDashoffset="300"
-                className="animate-[dash_10s_linear_infinite]"
-              />
-            </svg>
-            <style>{`
-              @keyframes dash {
-                to { stroke-dashoffset: 0; }
-              }
-            `}</style>
-            
-            {/* Moving Truck Node */}
-            <motion.div 
-              initial={{ x: -200, y: -100 }}
-              animate={{ x: 0, y: 100 }}
-              transition={{ duration: 5, ease: "linear" }}
-              className="relative z-10 w-12 h-12 bg-white rounded-full shadow-[0_0_30px_rgba(16,185,129,0.3)] flex items-center justify-center"
+      {/* TOP SECTION: Driver Management */}
+      <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+        {/* Section Header & Actions */}
+        <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50">
+          <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl w-fit">
+            <button 
+              onClick={() => setActiveTab('roster')}
+              className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'roster' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
             >
-              <Truck className="w-6 h-6 text-emerald-600" />
-              <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-white"></span>
-              </span>
-            </motion.div>
+              Driver Roster
+            </button>
+            <button 
+              onClick={() => setActiveTab('history')}
+              className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'history' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              Trip History
+            </button>
           </div>
-        ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-500">
-            <Map className="w-16 h-16 opacity-20 mb-4" />
-            <p className="font-medium tracking-wide">AWAITING SHIPMENT DISPATCH</p>
+
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setIsAddDriverModalOpen(true)}
+              className="bg-white border border-slate-200 hover:border-slate-300 text-slate-700 px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-sm"
+            >
+              <UserPlus className="w-4 h-4 text-indigo-500" /> Add Driver
+            </button>
+            <button 
+              onClick={() => setIsAddTripModalOpen(true)}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-lg shadow-indigo-200"
+            >
+              <Plus className="w-4 h-4" /> New Tracking Trip
+            </button>
+          </div>
+        </div>
+
+        {/* Driver Table (Roster) */}
+        {activeTab === 'roster' && (
+          <div className="p-5 overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-slate-100">
+                  <th className="pb-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Driver Name</th>
+                  <th className="pb-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Contact</th>
+                  <th className="pb-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Total Trips</th>
+                  <th className="pb-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
+                  <th className="pb-3 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {MOCK_DRIVERS.map((driver) => (
+                  <tr key={driver.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
+                    <td className="py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs">
+                          {driver.name.split(' ').map(n => n[0]).join('')}
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-900">{driver.name}</p>
+                          <p className="text-[10px] text-slate-400 font-mono">{driver.id}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 text-sm text-slate-600">{driver.phone}</td>
+                    <td className="py-4">
+                      <div className="flex items-center gap-1.5">
+                        <CheckCircle className="w-4 h-4 text-emerald-500" />
+                        <span className="text-sm font-bold text-slate-700">{driver.trips}</span>
+                      </div>
+                    </td>
+                    <td className="py-4">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${
+                        driver.status === 'Active' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' :
+                        driver.status === 'Available' ? 'bg-blue-50 text-blue-600 border border-blue-200' :
+                        'bg-slate-100 text-slate-500 border border-slate-200'
+                      }`}>
+                        {driver.status}
+                      </span>
+                    </td>
+                    <td className="py-4 text-right">
+                      <button className="text-xs font-bold text-indigo-600 hover:text-indigo-800">View Profile</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
-      </div>
 
-      {/* MODAL: Assign Driver & Token Generator */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-              onClick={() => setModalStep('form')} // allow clicking out only if needed, but lets restrict
+        {/* Trip History Placeholder */}
+        {activeTab === 'history' && (
+          <div className="p-12 flex flex-col items-center justify-center text-center">
+            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+              <FileSpreadsheet className="w-8 h-8 text-slate-300" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900">Historical Trip Data</h3>
+            <p className="text-sm text-slate-500 max-w-sm mt-2">All completed and wiped trips are securely archived here for compliance and auditing purposes.</p>
+          </div>
+        )}
+      </section>
+
+      {/* BOTTOM SECTION: Live Active Tracking */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <Activity className="w-5 h-5 text-emerald-500" />
+            Live Active Fleet (Working Only)
+          </h2>
+          <div className="relative w-64">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input 
+              type="text" 
+              placeholder="Filter active trucks..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-white border border-slate-200 text-xs rounded-xl pl-9 pr-4 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-            
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {MOCK_ACTIVE_TRIPS.filter(t => t.driver.toLowerCase().includes(searchQuery.toLowerCase()) || t.id.toLowerCase().includes(searchQuery.toLowerCase())).map(trip => (
             <motion.div 
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-white rounded-[24px] p-6 lg:p-8 w-full max-w-md shadow-2xl relative z-10 overflow-hidden"
+              key={trip.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-4 relative overflow-hidden"
             >
-              {modalStep === 'form' && (
-                <form onSubmit={handleGenerateToken} className="space-y-5">
-                  <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                    <Smartphone className="w-6 h-6 text-indigo-600" />
-                    Setup Live Tracking
-                  </h3>
-                  <p className="text-sm text-slate-500">Drivers don't need accounts. We'll send an SMS link to download the app and auto-configure the trip.</p>
-                  
-                  <div className="space-y-4 pt-2">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wide">Order ID</label>
-                      <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
-                        <option>Order #TRK-9928 (Machinery to China)</option>
-                        <option>Order #TRK-9929 (Electronics to EU)</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wide">Driver Phone Number</label>
-                      <input 
-                        required
-                        type="tel"
-                        placeholder="+1 (555) 000-0000"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
-                      />
-                    </div>
-                  </div>
+              {/* Progress Bar Background hint */}
+              <div className="absolute top-0 left-0 h-1 bg-slate-100 w-full">
+                <div className={`h-full ${trip.status === 'Delayed' ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${trip.progress}%` }}></div>
+              </div>
 
-                  <div className="pt-4 flex gap-3">
-                    <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 px-4 py-3 rounded-xl font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">
-                      Cancel
-                    </button>
-                    <button type="submit" className="flex-1 px-4 py-3 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all active:scale-95">
-                      Generate Token
-                    </button>
-                  </div>
-                </form>
-              )}
-
-              {modalStep === 'loading' && (
-                <div className="py-12 flex flex-col items-center text-center space-y-4">
-                  <div className="relative w-16 h-16">
-                    <div className="absolute inset-0 rounded-full border-4 border-indigo-100"></div>
-                    <div className="absolute inset-0 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin"></div>
-                  </div>
-                  <h3 className="text-lg font-bold text-slate-900">Generating Zero-Trust Token</h3>
-                  <p className="text-sm text-slate-500">Creating dynamic QR code and dispatching SMS...</p>
+              <div className="flex justify-between items-start mt-1">
+                <div>
+                  <h3 className="font-mono font-bold text-slate-900 text-lg">{trip.id}</h3>
+                  <p className="text-sm text-slate-500 flex items-center gap-1.5 mt-0.5">
+                    <div className="w-4 h-4 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-[8px]">
+                      {trip.driver.charAt(0)}
+                    </div>
+                    {trip.driver}
+                  </p>
                 </div>
-              )}
+                <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+                  trip.status === 'Delayed' ? 'bg-amber-50 text-amber-600 border border-amber-200' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                }`}>
+                  {trip.status === 'Delayed' ? <Clock className="w-3 h-3" /> : <Activity className="w-3 h-3" />}
+                  {trip.status}
+                </span>
+              </div>
 
-              {modalStep === 'qr' && (
-                <div className="text-center space-y-5">
-                  <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <CheckCircle className="w-8 h-8" />
+              <div className="flex items-center gap-3 text-sm">
+                <div className="flex-1">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">Origin</p>
+                  <p className="font-semibold text-slate-700 flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-slate-400" /> {trip.origin}</p>
+                </div>
+                <div className="w-8 border-t-2 border-dashed border-slate-200"></div>
+                <div className="flex-1 text-right">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">Destination</p>
+                  <p className="font-semibold text-slate-700 flex items-center justify-end gap-1"><MapPin className="w-3.5 h-3.5 text-indigo-500" /> {trip.dest}</p>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex justify-between items-center text-xs">
+                <span className="font-mono text-slate-500">SPD: <strong className="text-slate-800">{trip.speed}</strong></span>
+                <span className="font-mono text-slate-500">PRG: <strong className="text-slate-800">{trip.progress}%</strong></span>
+                <button className="text-indigo-600 font-bold hover:text-indigo-800">Track Live &rarr;</button>
+              </div>
+            </motion.div>
+          ))}
+          {MOCK_ACTIVE_TRIPS.length === 0 && (
+            <div className="col-span-full py-8 text-center text-slate-500 text-sm">
+              No active trips found.
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* MODALS */}
+      <AnimatePresence>
+        {isAddDriverModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsAddDriverModalOpen(false)} />
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl relative z-10">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-bold text-slate-900">Add New Driver</h3>
+                <button onClick={() => setIsAddDriverModalOpen(false)} className="p-2 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl transition-colors"><X className="w-4 h-4" /></button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Driver Full Name</label>
+                  <input type="text" placeholder="e.g. John Doe" className="w-full bg-slate-50 border border-slate-200 text-sm rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Phone Number (For SMS Link)</label>
+                  <input type="text" placeholder="+1 (555) 000-0000" className="w-full bg-slate-50 border border-slate-200 text-sm rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                </div>
+                <button onClick={() => setIsAddDriverModalOpen(false)} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold shadow-lg shadow-indigo-200 mt-2">Save Driver</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {isAddTripModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setIsAddTripModalOpen(false)} />
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-white rounded-[24px] p-6 w-full max-w-md shadow-2xl relative z-10">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-bold text-slate-900">Create New Tracking Trip</h3>
+                <button onClick={() => setIsAddTripModalOpen(false)} className="p-2 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl transition-colors"><X className="w-4 h-4" /></button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Assign Driver</label>
+                  <select className="w-full bg-slate-50 border border-slate-200 text-sm rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option>Marcus Vance</option>
+                    <option>Sarah Lindqvist</option>
+                  </select>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Origin</label>
+                    <input type="text" placeholder="Start Point" className="w-full bg-slate-50 border border-slate-200 text-sm rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900">Trip Configured!</h3>
-                    <p className="text-sm text-slate-500 mt-1">SMS sent to {phone || 'driver'}. Driver can also scan below.</p>
-                  </div>
-                  
-                  <div className="bg-slate-50 p-6 rounded-2xl inline-block border border-slate-200 shadow-sm relative group overflow-hidden">
-                    <QrCode className="w-40 h-40 text-slate-800 relative z-10" />
-                    {/* Scanning animation line */}
-                    <motion.div 
-                      animate={{ y: [0, 160, 0] }} 
-                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                      className="absolute top-0 left-0 w-full h-1 bg-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.5)] z-20"
-                    />
-                  </div>
-
-                  <div className="pt-2">
-                    <button 
-                      onClick={handleCloseModal}
-                      className="w-full px-4 py-3 rounded-xl font-bold text-white bg-slate-900 hover:bg-slate-800 transition-all active:scale-95"
-                    >
-                      Done & Start Tracking
-                    </button>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Destination</label>
+                    <input type="text" placeholder="End Point" className="w-full bg-slate-50 border border-slate-200 text-sm rounded-xl px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                   </div>
                 </div>
-              )}
+                <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mt-2 text-sm text-indigo-800">
+                  <p className="font-bold flex items-center gap-2"><Truck className="w-4 h-4" /> Zero-Trust Sync</p>
+                  <p className="mt-1 text-xs opacity-80">Creating this trip will generate a secure QR code for the driver to scan, requiring no permanent login.</p>
+                </div>
+                <button onClick={() => setIsAddTripModalOpen(false)} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold shadow-lg shadow-indigo-200 mt-2">Generate Trip Token & QR</button>
+              </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
-
     </div>
   );
 }
