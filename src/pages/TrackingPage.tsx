@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Truck, Plus, MapPin, CheckCircle, Clock, Search, X, Activity, UserPlus, FileSpreadsheet, BarChart3, TrendingUp, ShieldCheck, Radio, AlertTriangle, QrCode, Loader2 } from 'lucide-react';
+import { Truck, Plus, MapPin, CheckCircle, Clock, Search, X, Activity, UserPlus, FileSpreadsheet, BarChart3, TrendingUp, ShieldCheck, Radio, AlertTriangle, QrCode, Loader2, Map } from 'lucide-react';
 
 // Mock Data
 const MOCK_DRIVERS = [
