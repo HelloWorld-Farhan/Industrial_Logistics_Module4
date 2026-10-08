@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Truck, Plus, MapPin, CheckCircle, Clock, Search, X, Activity, UserPlus, FileSpreadsheet, BarChart3, TrendingUp, ShieldCheck, Radio, AlertTriangle, QrCode, Loader2, Map } from 'lucide-react';
+import { Truck, Plus, MapPin, CheckCircle, Clock, Search, X, Activity, UserPlus, FileSpreadsheet, BarChart3, TrendingUp, ShieldCheck, Radio, AlertTriangle, QrCode, Loader2, Map, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
 
 // Mock Data
 const MOCK_DRIVERS = [
@@ -34,7 +34,12 @@ export default function TrackingPage() {
   const [selectedDriver, setSelectedDriver] = useState<typeof MOCK_DRIVERS[0] | null>(null);
   const [selectedTrip, setSelectedTrip] = useState<typeof MOCK_ACTIVE_TRIPS[0] | null>(null);
   const [selectedHistoryTrip, setSelectedHistoryTrip] = useState<typeof MOCK_HISTORY_TRIPS[0] | null>(null);
+  
+  // Filtering and Pagination State
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<'All' | 'In-Transit' | 'Delayed'>('All');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
 
   const handleGenerateTrip = () => {
     setTripGenerationState('generating');
@@ -248,27 +253,67 @@ export default function TrackingPage() {
             Live Active Fleet 
             <span className="text-xs font-bold bg-slate-100 text-slate-500 px-2 py-1 rounded-md ml-2">Working Only</span>
           </h2>
-          <div className="relative w-full sm:w-72">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input 
-              type="text" 
-              placeholder="Search by Driver or ID..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white border border-slate-200 text-sm rounded-xl pl-10 pr-4 py-2.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
-            />
+          
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            {/* Filter Buttons */}
+            <div className="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200">
+              <button 
+                onClick={() => { setActiveFilter('All'); setCurrentPage(1); }}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${activeFilter === 'All' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                All
+              </button>
+              <button 
+                onClick={() => { setActiveFilter('In-Transit'); setCurrentPage(1); }}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${activeFilter === 'In-Transit' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                In-Transit
+              </button>
+              <button 
+                onClick={() => { setActiveFilter('Delayed'); setCurrentPage(1); }}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${activeFilter === 'Delayed' ? 'bg-white text-amber-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                Delayed
+              </button>
+            </div>
+
+            {/* Search Input */}
+            <div className="relative w-full sm:w-64">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input 
+                type="text" 
+                placeholder="Search Driver or ID..."
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                className="w-full bg-white border border-slate-200 text-sm rounded-xl pl-9 pr-4 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
+              />
+            </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {MOCK_ACTIVE_TRIPS.filter(t => t.driver.toLowerCase().includes(searchQuery.toLowerCase()) || t.id.toLowerCase().includes(searchQuery.toLowerCase())).map(trip => (
-            <motion.div 
-              key={trip.id}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-5 relative overflow-hidden group hover:shadow-md transition-all"
-            >
+          {(() => {
+            // Apply filtering logic
+            const filteredTrips = MOCK_ACTIVE_TRIPS.filter(trip => {
+              const matchesSearch = trip.driver.toLowerCase().includes(searchQuery.toLowerCase()) || trip.id.toLowerCase().includes(searchQuery.toLowerCase());
+              const matchesFilter = activeFilter === 'All' || trip.status === activeFilter;
+              return matchesSearch && matchesFilter;
+            });
+
+            // Apply pagination logic
+            const totalPages = Math.ceil(filteredTrips.length / itemsPerPage);
+            const paginatedTrips = filteredTrips.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+            return (
+              <>
+                {paginatedTrips.map(trip => (
+                  <motion.div 
+                    key={trip.id}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                    className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-5 relative overflow-hidden group hover:shadow-md transition-all"
+                  >
               {/* Progress Bar Background hint */}
               <div className="absolute top-0 left-0 h-1.5 bg-slate-100 w-full">
                 <div className={`h-full transition-all duration-1000 ${trip.status === 'Delayed' ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${trip.progress}%` }}></div>
@@ -326,13 +371,45 @@ export default function TrackingPage() {
                   <Radio className="w-3.5 h-3.5" /> Track Live
                 </button>
               </div>
-            </motion.div>
-          ))}
-          {MOCK_ACTIVE_TRIPS.length === 0 && (
-            <div className="col-span-full py-12 text-center text-slate-500 text-sm bg-white rounded-2xl border border-slate-200 border-dashed">
-              No active trips match your search.
-            </div>
-          )}
+                </motion.div>
+              ))}
+              
+              {filteredTrips.length === 0 && (
+                <div className="col-span-full py-12 text-center text-slate-500 text-sm bg-white rounded-2xl border border-slate-200 border-dashed">
+                  No active trips match your search or filter.
+                </div>
+              )}
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="col-span-full flex items-center justify-between bg-white border border-slate-200 p-4 rounded-2xl mt-2 shadow-sm">
+                  <span className="text-xs font-bold text-slate-500">
+                    Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredTrips.length)} of {filteredTrips.length} Trips
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <span className="text-xs font-bold text-slate-900 min-w-[3rem] text-center bg-slate-50 py-1 rounded-md border border-slate-100">
+                      {currentPage} / {totalPages}
+                    </span>
+                    <button 
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                      className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
+            );
+          })()}
         </div>
       </section>
 
