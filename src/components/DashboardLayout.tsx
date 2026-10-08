@@ -254,7 +254,7 @@ export default function DashboardLayout() {
                   </div>
                   
                   <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-slate-100 relative">
-                    <RefreshCcw className="w-8 h-8 text-indigo-600 animate-spin" />
+                    <RefreshCcw className={`w-8 h-8 text-indigo-600 ${syncProgress < 100 ? 'animate-spin' : ''}`} />
                     {syncProgress === 100 && (
                       <motion.div 
                         initial={{ scale: 0 }} animate={{ scale: 1 }} 
@@ -268,18 +268,40 @@ export default function DashboardLayout() {
                   <h3 className="text-xl font-bold text-slate-900 mb-2">
                     {syncProgress === 100 ? 'Sync Complete!' : 'Force Fleet Sync'}
                   </h3>
-                  <p className="text-sm text-slate-500 mb-6">
+                  <p className="text-sm text-slate-500 mb-4">
                     {syncProgress === 100 
                       ? 'All active telemetry and driver profiles have been successfully updated.' 
                       : 'Connecting to satellite network to pull live telemetry data from active fleet...'
                     }
                   </p>
 
-                  <div className="w-full bg-slate-50 rounded-xl p-4 border border-slate-100">
-                    <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                      <span>Progress</span>
+                  <div className="w-full bg-slate-50 rounded-xl p-4 border border-slate-100 mb-4 text-left">
+                    <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 border-b border-slate-200 pb-2">
+                      <span>Sync Progress</span>
                       <span className="text-indigo-600">{syncProgress}%</span>
                     </div>
+                    
+                    {/* Dummy Logs */}
+                    <div className="h-12 flex flex-col justify-end overflow-hidden mb-3">
+                      <AnimatePresence mode="popLayout">
+                        <motion.div
+                          key={Math.floor(syncProgress / 20)}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10, position: 'absolute' }}
+                          className="text-[10px] font-mono text-slate-600 flex items-center gap-2"
+                        >
+                          <span className="text-emerald-500">▶</span>
+                          {syncProgress < 20 ? 'Establishing secure uplink...' :
+                           syncProgress < 40 ? 'Fetching telemetry for Marcus Vance (TRK-9928)...' :
+                           syncProgress < 60 ? 'Updating GPS coordinates for Sarah Lindqvist...' :
+                           syncProgress < 80 ? 'Resolving localized traffic data...' :
+                           syncProgress < 100 ? 'Finalizing data verification checks...' :
+                           'Sync process finalized successfully.'}
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
+
                     <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
                       <motion.div 
                         className="h-full bg-indigo-500"
@@ -288,6 +310,23 @@ export default function DashboardLayout() {
                       />
                     </div>
                   </div>
+
+                  {syncProgress < 100 && (
+                    <button 
+                      onClick={() => setIsSyncing(false)}
+                      className="w-full bg-white hover:bg-slate-50 text-rose-600 font-bold text-sm py-2.5 rounded-xl border border-slate-200 transition-colors shadow-sm"
+                    >
+                      Cancel Sync
+                    </button>
+                  )}
+                  {syncProgress === 100 && (
+                    <button 
+                      onClick={() => setIsSyncing(false)}
+                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm py-2.5 rounded-xl transition-colors shadow-sm"
+                    >
+                      Close Dashboard
+                    </button>
+                  )}
                 </motion.div>
               </div>
             )}

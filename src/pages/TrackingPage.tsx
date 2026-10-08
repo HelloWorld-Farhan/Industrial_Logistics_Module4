@@ -13,6 +13,8 @@ const MOCK_DRIVERS = [
 const MOCK_ACTIVE_TRIPS = [
   { id: 'TRK-9928', driver: 'Marcus Vance', origin: 'Paris Depot', dest: 'Rotterdam Port', progress: 28, status: 'In-Transit', speed: '74 km/h', eta: '20:30 CET' },
   { id: 'TRK-4402', driver: 'Sarah Lindqvist', origin: 'Berlin Hub', dest: 'Hamburg Dock', progress: 65, status: 'Delayed', speed: '0 km/h', eta: 'Delay 45m' },
+  { id: 'TRK-8819', driver: 'James Dubois', origin: 'Lyon Depot', dest: 'Geneva Base', progress: 89, status: 'In-Transit', speed: '82 km/h', eta: '14:15 CET' },
+  { id: 'TRK-2201', driver: 'Elena Rostova', origin: 'Vienna Base', dest: 'Munich Port', progress: 12, status: 'In-Transit', speed: '65 km/h', eta: 'Tomorrow 08:00 CET' },
 ];
 
 const MOCK_HISTORY_TRIPS = [
