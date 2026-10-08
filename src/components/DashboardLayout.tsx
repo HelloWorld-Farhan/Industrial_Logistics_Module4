@@ -190,7 +190,7 @@ export default function DashboardLayout() {
         <main className="flex-1 flex flex-col min-w-0 bg-white overflow-hidden relative">
           
           <TopHeader 
-            searchPlaceholder="Search active trucks, tokens, or routes..."
+            searchPlaceholder={location.pathname.includes('route-management') ? "Search AI routing history or global tariffs..." : "Search active trucks, tokens, or routes..."}
             actionButton={
               <button 
                 onClick={() => {
@@ -212,7 +212,8 @@ export default function DashboardLayout() {
                 disabled={isSyncing}
                 className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-slate-200 disabled:opacity-50"
               >
-                <RefreshCcw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} /> Force Fleet Sync
+                <RefreshCcw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} /> 
+                {location.pathname.includes('route-management') ? 'Sync API Tariffs' : 'Force Fleet Sync'}
               </button>
             }
           />
@@ -266,12 +267,12 @@ export default function DashboardLayout() {
                   </div>
 
                   <h3 className="text-xl font-bold text-slate-900 mb-2">
-                    {syncProgress === 100 ? 'Sync Complete!' : 'Force Fleet Sync'}
+                    {syncProgress === 100 ? 'Sync Complete!' : (location.pathname.includes('route-management') ? 'Sync API Tariffs' : 'Force Fleet Sync')}
                   </h3>
                   <p className="text-sm text-slate-500 mb-4">
                     {syncProgress === 100 
-                      ? 'All active telemetry and driver profiles have been successfully updated.' 
-                      : 'Connecting to satellite network to pull live telemetry data from active fleet...'
+                      ? (location.pathname.includes('route-management') ? 'All global tariff and shipping rates have been updated.' : 'All active telemetry and driver profiles have been successfully updated.')
+                      : (location.pathname.includes('route-management') ? 'Connecting to global logistics APIs to pull live cargo and freight tariffs...' : 'Connecting to satellite network to pull live telemetry data from active fleet...')
                     }
                   </p>
 
@@ -292,12 +293,21 @@ export default function DashboardLayout() {
                           className="text-[10px] font-mono text-slate-600 flex items-center gap-2"
                         >
                           <span className="text-emerald-500">▶</span>
-                          {syncProgress < 20 ? 'Establishing secure uplink...' :
+                          {location.pathname.includes('route-management') ? (
+                           syncProgress < 20 ? 'Establishing secure API handshake...' :
+                           syncProgress < 40 ? 'Fetching live sea freight rates (Port of Rotterdam)...' :
+                           syncProgress < 60 ? 'Updating air cargo schedules...' :
+                           syncProgress < 80 ? 'Resolving international customs delays...' :
+                           syncProgress < 100 ? 'Finalizing tariff data verification...' :
+                           'Sync process finalized successfully.'
+                          ) : (
+                           syncProgress < 20 ? 'Establishing secure uplink...' :
                            syncProgress < 40 ? 'Fetching telemetry for Marcus Vance (TRK-9928)...' :
                            syncProgress < 60 ? 'Updating GPS coordinates for Sarah Lindqvist...' :
                            syncProgress < 80 ? 'Resolving localized traffic data...' :
                            syncProgress < 100 ? 'Finalizing data verification checks...' :
-                           'Sync process finalized successfully.'}
+                           'Sync process finalized successfully.'
+                          )}
                         </motion.div>
                       </AnimatePresence>
                     </div>

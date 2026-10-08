@@ -206,26 +206,26 @@ export default function RouteManagementPage() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.3 }}
-                    className="bg-[#0B0F19] p-6 rounded-2xl shadow-xl relative overflow-hidden border border-slate-800"
+                    className="bg-white p-6 rounded-2xl shadow-sm relative overflow-hidden border border-slate-200"
                   >
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 blur-[60px] pointer-events-none" />
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-100 blur-[60px] pointer-events-none" />
                     
                     <div className="relative z-10">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
                           <BrainCircuit className="w-5 h-5" />
                         </div>
                         <div>
-                          <h2 className="text-sm font-bold text-white uppercase tracking-wider">The AI Recommendation</h2>
-                          <p className="text-emerald-400 text-xs font-mono">Evaluation Complete</p>
+                          <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">The AI Recommendation</h2>
+                          <p className="text-emerald-600 text-xs font-mono font-bold">Evaluation Complete</p>
                         </div>
                       </div>
                       
-                      <p className="text-slate-300 text-sm leading-relaxed mb-5 border-l-2 border-emerald-500 pl-4 py-1">
+                      <p className="text-slate-600 text-sm leading-relaxed mb-5 border-l-2 border-emerald-500 pl-4 py-1">
                         Since it is <strong>non-perishable machinery</strong> with no cold-chain requirements, speed is less critical than cost. 
                         The AI explicitly recommends <strong>Sea Freight via Western Indian Port</strong>.
                         <br/><br/>
-                        <span className="text-emerald-300 font-medium italic">"Markedly cheaper with an acceptable extra transit time for non-perishable cargo."</span>
+                        <span className="text-emerald-700 font-semibold italic">"Markedly cheaper with an acceptable extra transit time for non-perishable cargo."</span>
                       </p>
 
                       {/* Step 4: Decision & Booking */}
@@ -234,8 +234,8 @@ export default function RouteManagementPage() {
                         disabled={bookingConfirmed}
                         className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
                           bookingConfirmed 
-                          ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/50 cursor-not-allowed'
-                          : 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)] active:scale-95'
+                          ? 'bg-emerald-50 text-emerald-600 border border-emerald-200 cursor-not-allowed'
+                          : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-200 active:scale-95'
                         }`}
                       >
                         {bookingConfirmed ? (
