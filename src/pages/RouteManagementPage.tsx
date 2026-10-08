@@ -199,7 +199,7 @@ export default function RouteManagementPage() {
                   {/* Dummy "PowerBI style" grid showing carrier status */}
                   <div className="w-full">
                     <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-left mb-3">Live Carrier API Status</h4>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {[
                         { name: 'Maersk Ocean API', status: 'Online', ping: '12ms' },
                         { name: 'DHL Air Freight', status: 'Online', ping: '18ms' },

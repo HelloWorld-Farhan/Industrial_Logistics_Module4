@@ -599,7 +599,7 @@ export default function TrackingPage() {
               className="bg-slate-100 rounded-[20px] w-full max-w-6xl h-[85vh] shadow-2xl relative z-10 flex flex-col border border-slate-300 overflow-hidden"
             >
               {/* Power BI Header */}
-              <div className="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center z-20 shrink-0">
+              <div className="bg-white border-b border-slate-200 px-4 md:px-6 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 z-20 shrink-0">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-md">
                     {selectedDriver.name.split(' ').map(n => n[0]).join('')}
@@ -612,8 +612,8 @@ export default function TrackingPage() {
                     <p className="text-xs font-mono text-slate-500 mt-0.5">ID: {selectedDriver.id} | Contact: {selectedDriver.phone} | Last Sync: Just Now</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-sm">
+                <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                  <button className="flex-1 md:flex-none justify-center items-center gap-2 px-3 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-sm">
                     <FileSpreadsheet className="w-3.5 h-3.5" /> Export Data
                   </button>
                   <button onClick={() => setSelectedDriver(null)} className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-lg transition-colors"><X className="w-5 h-5" /></button>
@@ -621,13 +621,13 @@ export default function TrackingPage() {
               </div>
 
               {/* Dashboard Content - Fixed Height Grid */}
-              <div className="flex-1 p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 overflow-hidden bg-slate-100/50">
+              <div className="flex-1 p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 overflow-y-auto bg-slate-100/50">
                 
                 {/* LEFT COLUMN (KPIs & Charts) - 8 Cols */}
-                <div className="lg:col-span-8 flex flex-col gap-4 overflow-hidden">
+                <div className="lg:col-span-8 flex flex-col gap-4">
                   
                   {/* Top KPIs */}
-                  <div className="grid grid-cols-4 gap-4 shrink-0">
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 shrink-0">
                     <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
                       <div className="flex items-center justify-between text-slate-500 mb-2">
                         <span className="text-[10px] font-bold uppercase tracking-wider">Total Volume</span>
@@ -671,7 +671,7 @@ export default function TrackingPage() {
                   </div>
 
                   {/* Main Charts Area */}
-                  <div className="flex-1 grid grid-cols-2 gap-4 min-h-0">
+                  <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[300px] md:min-h-0">
                     
                     {/* Bar Chart: 6 Month Volume */}
                     <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col">
@@ -755,7 +755,7 @@ export default function TrackingPage() {
                 </div>
 
                 {/* RIGHT COLUMN - 4 Cols */}
-                <div className="lg:col-span-4 flex flex-col gap-4 overflow-hidden">
+                <div className="lg:col-span-4 flex flex-col gap-4">
                   
                   {/* Status Card */}
                   <div className="bg-slate-900 rounded-xl p-5 text-white shadow-md relative overflow-hidden shrink-0">
@@ -817,7 +817,7 @@ export default function TrackingPage() {
               className="bg-white sm:rounded-[32px] w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-6xl shadow-2xl relative z-10 flex flex-col border border-slate-200 overflow-hidden"
             >
               {/* Header */}
-              <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50/50">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-4 md:p-6 border-b border-slate-100 bg-slate-50/50">
                 <div className="flex items-center gap-4">
                   <div className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center">
                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
@@ -827,7 +827,7 @@ export default function TrackingPage() {
                     <p className="text-xs font-mono text-slate-500 uppercase mt-1">Driver: {selectedTrip.driver} • Link Encrypted</p>
                   </div>
                 </div>
-                <button onClick={() => setSelectedTrip(null)} className="p-2 bg-white hover:bg-slate-100 text-slate-500 rounded-xl transition-colors border border-slate-200 shadow-sm"><X className="w-5 h-5" /></button>
+                <button onClick={() => setSelectedTrip(null)} className="absolute top-4 right-4 md:relative md:top-auto md:right-auto p-2 bg-white hover:bg-slate-100 text-slate-500 rounded-xl transition-colors border border-slate-200 shadow-sm"><X className="w-5 h-5" /></button>
               </div>
 
               {/* Radar Map Content - Light Mode */}
@@ -862,7 +862,7 @@ export default function TrackingPage() {
                 </svg>
 
                 {/* Floating Widgets */}
-                <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-md border border-slate-200 shadow-lg p-5 rounded-2xl w-72">
+                <div className="hidden md:block absolute top-6 left-6 bg-white/90 backdrop-blur-md border border-slate-200 shadow-lg p-5 rounded-2xl w-72">
                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Navigational Data</h4>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
@@ -880,7 +880,7 @@ export default function TrackingPage() {
                   </div>
                 </div>
 
-                <div className="absolute bottom-6 right-6 bg-white/90 backdrop-blur-md border border-slate-200 shadow-lg p-5 rounded-2xl w-80">
+                <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-auto md:right-6 bg-white/90 backdrop-blur-md border border-slate-200 shadow-lg p-4 md:p-5 rounded-2xl md:w-80">
                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Transit Progress</h4>
                   <div className="flex justify-between items-end mb-2">
                     <span className="text-xs font-bold text-slate-700">{selectedTrip.origin}</span>
@@ -911,7 +911,7 @@ export default function TrackingPage() {
               className="bg-slate-100 rounded-[20px] w-full max-w-5xl h-[80vh] shadow-2xl relative z-10 flex flex-col border border-slate-300 overflow-hidden"
             >
               {/* Header */}
-              <div className="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center z-20 shrink-0">
+              <div className="bg-white border-b border-slate-200 px-4 md:px-6 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 z-20 shrink-0">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg shadow-sm">
                     <FileSpreadsheet className="w-6 h-6" />
@@ -933,10 +933,10 @@ export default function TrackingPage() {
               </div>
 
               {/* Dashboard Content */}
-              <div className="flex-1 p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 overflow-hidden bg-slate-100/50">
+              <div className="flex-1 p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 overflow-y-auto bg-slate-100/50">
                 
                 {/* Left Col - Map & Route */}
-                <div className="lg:col-span-1 flex flex-col gap-6">
+                <div className="lg:col-span-1 flex flex-col gap-6 min-h-[300px]">
                   {/* Map Concept */}
                   <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-2 flex-1 relative overflow-hidden flex flex-col">
                     <div className="p-3 border-b border-slate-100 flex items-center gap-2">
@@ -968,7 +968,7 @@ export default function TrackingPage() {
                 <div className="lg:col-span-2 flex flex-col gap-6 overflow-hidden">
                   
                   {/* Top Stats Grid */}
-                  <div className="grid grid-cols-3 gap-4 shrink-0">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 shrink-0">
                     <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Total Distance</span>
                       <span className="text-2xl font-bold text-slate-900">{selectedHistoryTrip.distance}</span>
