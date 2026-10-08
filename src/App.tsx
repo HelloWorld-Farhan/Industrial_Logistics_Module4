@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import DashboardLayout from './components/DashboardLayout';
 import TrackingPage from './pages/TrackingPage';
 import RouteManagementPage from './pages/RouteManagementPage';
+import ConsolidatedTrackerPage from './pages/ConsolidatedTrackerPage';
 import SettingsPage from './pages/SettingsPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -30,6 +31,7 @@ function AppRoutes() {
         <Route index element={<Navigate to="tracking" replace />} />
         <Route path="tracking" element={<TrackingPage />} />
         <Route path="route-management" element={<RouteManagementPage />} />
+        <Route path="consolidated" element={<ConsolidatedTrackerPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/login" replace />} />

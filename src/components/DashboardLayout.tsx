@@ -21,8 +21,7 @@ export default function DashboardLayout() {
   const navItems: Array<{to: string; icon: any; label: string; activeIconColor?: string; inactiveIconColor?: string; hasPulse?: boolean}> = [
     { to: '/dashboard/tracking', icon: Map, label: 'Tracking Agent', activeIconColor: 'text-emerald-500', hasPulse: true },
     { to: '/dashboard/route-management', icon: Compass, label: 'Route Management' },
-    { to: '/dashboard/consolidated', icon: MonitorStop, label: 'Consolidated Tracker' },
-    { to: '/dashboard/analytics', icon: LineChart, label: 'Analytics' }
+    { to: '/dashboard/consolidated', icon: MonitorStop, label: 'Consolidated Tracker' }
   ];
 
   return (
@@ -213,7 +212,9 @@ export default function DashboardLayout() {
                 className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-slate-200 disabled:opacity-50"
               >
                 <RefreshCcw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} /> 
-                {location.pathname.includes('route-management') ? 'Sync API Tariffs' : 'Force Fleet Sync'}
+                {location.pathname.includes('route-management') ? 'Sync API Tariffs' : 
+                 location.pathname.includes('consolidated') ? 'Sync Warehouse Data' : 
+                 'Force Fleet Sync'}
               </button>
             }
           />
@@ -267,12 +268,19 @@ export default function DashboardLayout() {
                   </div>
 
                   <h3 className="text-xl font-bold text-slate-900 mb-2">
-                    {syncProgress === 100 ? 'Sync Complete!' : (location.pathname.includes('route-management') ? 'Sync API Tariffs' : 'Force Fleet Sync')}
+                    {syncProgress === 100 ? 'Sync Complete!' : 
+                     (location.pathname.includes('route-management') ? 'Sync API Tariffs' : 
+                      location.pathname.includes('consolidated') ? 'Sync Warehouse Data' : 
+                      'Force Fleet Sync')}
                   </h3>
                   <p className="text-sm text-slate-500 mb-4">
                     {syncProgress === 100 
-                      ? (location.pathname.includes('route-management') ? 'All global tariff and shipping rates have been updated.' : 'All active telemetry and driver profiles have been successfully updated.')
-                      : (location.pathname.includes('route-management') ? 'Connecting to global logistics APIs to pull live cargo and freight tariffs...' : 'Connecting to satellite network to pull live telemetry data from active fleet...')
+                      ? (location.pathname.includes('route-management') ? 'All global tariff and shipping rates have been updated.' : 
+                         location.pathname.includes('consolidated') ? 'All inbound and outbound warehouse data has been synchronized.' :
+                         'All active telemetry and driver profiles have been successfully updated.')
+                      : (location.pathname.includes('route-management') ? 'Connecting to global logistics APIs to pull live cargo and freight tariffs...' : 
+                         location.pathname.includes('consolidated') ? 'Normalizing data from Procurement Database and Warehouse Management System...' :
+                         'Connecting to satellite network to pull live telemetry data from active fleet...')
                     }
                   </p>
 
@@ -299,6 +307,13 @@ export default function DashboardLayout() {
                            syncProgress < 60 ? 'Updating air cargo schedules...' :
                            syncProgress < 80 ? 'Resolving international customs delays...' :
                            syncProgress < 100 ? 'Finalizing tariff data verification...' :
+                           'Sync process finalized successfully.'
+                          ) : location.pathname.includes('consolidated') ? (
+                           syncProgress < 20 ? 'Connecting to Procurement Database...' :
+                           syncProgress < 40 ? 'Fetching raw material inbound schedules...' :
+                           syncProgress < 60 ? 'Connecting to Warehouse Management System...' :
+                           syncProgress < 80 ? 'Normalizing outbound finished goods data...' :
+                           syncProgress < 100 ? 'Checking for dock scheduling conflicts...' :
                            'Sync process finalized successfully.'
                           ) : (
                            syncProgress < 20 ? 'Establishing secure uplink...' :
