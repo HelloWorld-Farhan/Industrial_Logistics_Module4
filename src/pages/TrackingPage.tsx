@@ -18,9 +18,10 @@ const MOCK_ACTIVE_TRIPS = [
 ];
 
 const MOCK_HISTORY_TRIPS = [
-  { id: 'TRK-092', driver: 'Marcus Vance', origin: 'Lyon Depot', dest: 'Paris Hub', date: 'Oct 07, 2026', distance: '460 km', duration: '5h 12m', rating: 'Perfect', incidents: 0, compliance: '100%', fuelEfficiency: '8.2 L/100km', avgSpeed: '88 km/h' },
-  { id: 'TRK-091', driver: 'James Dubois', origin: 'Munich Port', dest: 'Berlin Hub', date: 'Oct 05, 2026', distance: '580 km', duration: '6h 45m', rating: 'Good', incidents: 1, compliance: '94%', fuelEfficiency: '8.8 L/100km', avgSpeed: '85 km/h' },
-  { id: 'TRK-088', driver: 'Sarah Lindqvist', origin: 'Vienna Base', dest: 'Munich Port', date: 'Oct 02, 2026', distance: '430 km', duration: '4h 50m', rating: 'Perfect', incidents: 0, compliance: '100%', fuelEfficiency: '7.9 L/100km', avgSpeed: '91 km/h' },
+  { id: 'TRK-092', driver: 'Marcus Vance', origin: 'Lyon Depot', dest: 'Paris Hub', date: 'Oct 07, 2026', distance: '460 km', duration: '5h 12m', rating: 'Perfect', status: 'Completed', incidents: 0, compliance: '100%', fuelEfficiency: '8.2 L/100km', avgSpeed: '88 km/h' },
+  { id: 'TRK-091', driver: 'James Dubois', origin: 'Munich Port', dest: 'Berlin Hub', date: 'Oct 05, 2026', distance: '580 km', duration: '6h 45m', rating: 'Good', status: 'Completed', incidents: 1, compliance: '94%', fuelEfficiency: '8.8 L/100km', avgSpeed: '85 km/h' },
+  { id: 'TRK-088', driver: 'Sarah Lindqvist', origin: 'Vienna Base', dest: 'Munich Port', date: 'Oct 02, 2026', distance: '430 km', duration: '4h 50m', rating: 'Perfect', status: 'Completed', incidents: 0, compliance: '100%', fuelEfficiency: '7.9 L/100km', avgSpeed: '91 km/h' },
+  { id: 'TRK-075', driver: 'Elena Rostova', origin: 'Hamburg Dock', dest: 'Berlin Hub', date: 'Sep 28, 2026', distance: '290 km', duration: 'N/A', rating: 'N/A', status: 'Canceled', incidents: 0, compliance: 'N/A', fuelEfficiency: 'N/A', avgSpeed: 'N/A' },
 ];
 
 export default function TrackingPage() {
@@ -38,6 +39,8 @@ export default function TrackingPage() {
   // Filtering and Pagination State
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<'All' | 'In-Transit' | 'Delayed'>('All');
+  const [driverFilter, setDriverFilter] = useState<'All' | 'Active' | 'Available' | 'Off-Duty'>('All');
+  const [historyFilter, setHistoryFilter] = useState<'All' | 'Completed' | 'Canceled'>('All');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
@@ -77,33 +80,53 @@ export default function TrackingPage() {
       <section className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
         {/* Section Header & Actions */}
         <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50">
-          <div className="flex items-center gap-2 bg-slate-200/50 p-1 rounded-xl w-fit">
-            <button 
-              onClick={() => setActiveTab('roster')}
-              className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'roster' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-            >
-              Driver Roster
-            </button>
-            <button 
-              onClick={() => setActiveTab('history')}
-              className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'history' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-            >
-              Trip History
-            </button>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+            <div className="flex items-center gap-2 bg-slate-200/50 p-1 rounded-xl w-fit">
+              <button 
+                onClick={() => setActiveTab('roster')}
+                className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'roster' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                Driver Roster
+              </button>
+              <button 
+                onClick={() => setActiveTab('history')}
+                className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'history' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                Trip History
+              </button>
+            </div>
+            
+            {/* Filter Toggle */}
+            {activeTab === 'roster' && (
+              <div className="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200">
+                <button onClick={() => setDriverFilter('All')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${driverFilter === 'All' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>All</button>
+                <button onClick={() => setDriverFilter('Active')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${driverFilter === 'Active' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>Active</button>
+                <button onClick={() => setDriverFilter('Available')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${driverFilter === 'Available' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>Available</button>
+                <button onClick={() => setDriverFilter('Off-Duty')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${driverFilter === 'Off-Duty' ? 'bg-white text-slate-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>Off-Duty</button>
+              </div>
+            )}
+            
+            {activeTab === 'history' && (
+              <div className="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200">
+                <button onClick={() => setHistoryFilter('All')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${historyFilter === 'All' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>All</button>
+                <button onClick={() => setHistoryFilter('Completed')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${historyFilter === 'Completed' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>Completed</button>
+                <button onClick={() => setHistoryFilter('Canceled')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${historyFilter === 'Canceled' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>Canceled</button>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setIsAddDriverModalOpen(true)}
-              className="bg-white border border-slate-200 hover:border-slate-300 text-slate-700 px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-sm"
+              className="bg-white border border-slate-200 hover:border-slate-300 text-slate-700 px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-sm shrink-0"
             >
-              <UserPlus className="w-4 h-4 text-indigo-500" /> Add Driver
+              <UserPlus className="w-4 h-4 text-indigo-500" /> <span className="hidden sm:inline">Add Driver</span>
             </button>
             <button 
               onClick={() => setIsAddTripModalOpen(true)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-lg shadow-indigo-200"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shadow-lg shadow-indigo-200 shrink-0"
             >
-              <Plus className="w-4 h-4" /> New Tracking Trip
+              <Plus className="w-4 h-4" /> <span className="hidden sm:inline">New Tracking Trip</span>
             </button>
           </div>
         </div>
@@ -122,7 +145,7 @@ export default function TrackingPage() {
                 </tr>
               </thead>
               <tbody>
-                {MOCK_DRIVERS.map((driver) => (
+                {MOCK_DRIVERS.filter(d => driverFilter === 'All' || d.status === driverFilter).map((driver) => (
                   <tr key={driver.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors group">
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
@@ -161,6 +184,13 @@ export default function TrackingPage() {
                     </td>
                   </tr>
                 ))}
+                {MOCK_DRIVERS.filter(d => driverFilter === 'All' || d.status === driverFilter).length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="py-12 text-center text-slate-500 text-sm">
+                      No drivers match this filter.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -180,7 +210,7 @@ export default function TrackingPage() {
                 </tr>
               </thead>
               <tbody>
-                {MOCK_HISTORY_TRIPS.map((trip) => (
+                {MOCK_HISTORY_TRIPS.filter(t => historyFilter === 'All' || t.status === historyFilter).map((trip) => (
                   <tr key={trip.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors group">
                     <td className="py-4 px-6">
                       <p className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{trip.id}</p>
@@ -190,18 +220,26 @@ export default function TrackingPage() {
                       <div className="flex items-center gap-4">
                         {/* Static Mini Map Concept */}
                         <div className="w-16 h-10 bg-indigo-50/50 rounded-lg border border-indigo-100 overflow-hidden relative flex items-center justify-center shrink-0">
-                          <svg className="absolute inset-0 w-full h-full opacity-30" preserveAspectRatio="none">
-                            <path d="M -10 20 Q 20 40, 40 10 T 80 20" fill="none" stroke="#4F46E5" strokeWidth="2" />
-                          </svg>
-                          <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 absolute left-2"></div>
-                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 absolute right-2"></div>
+                          {trip.status === 'Completed' ? (
+                            <>
+                              <svg className="absolute inset-0 w-full h-full opacity-30" preserveAspectRatio="none">
+                                <path d="M -10 20 Q 20 40, 40 10 T 80 20" fill="none" stroke="#4F46E5" strokeWidth="2" />
+                              </svg>
+                              <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 absolute left-2"></div>
+                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 absolute right-2"></div>
+                            </>
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-rose-50/50">
+                              <X className="w-4 h-4 text-rose-300" />
+                            </div>
+                          )}
                         </div>
                         <div>
                           <div className="flex items-center gap-1.5 text-xs font-medium text-slate-700">
                             <MapPin className="w-3 h-3 text-slate-400" /> {trip.origin}
                           </div>
                           <div className="flex items-center gap-1.5 text-xs font-medium text-slate-700 mt-1">
-                            <MapPin className="w-3 h-3 text-emerald-500" /> {trip.dest}
+                            <MapPin className={`w-3 h-3 ${trip.status === 'Completed' ? 'text-emerald-500' : 'text-slate-400'}`} /> {trip.dest}
                           </div>
                         </div>
                       </div>
@@ -216,14 +254,18 @@ export default function TrackingPage() {
                     </td>
                     <td className="py-4 px-6">
                       <div className="flex gap-3">
-                        <span className="bg-slate-50 border border-slate-100 text-slate-600 px-2 py-1 rounded text-[10px] font-mono font-bold flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> {trip.duration}
-                        </span>
                         <span className={`border px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 ${
-                          trip.rating === 'Perfect' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-amber-50 text-amber-600 border-amber-200'
+                          trip.status === 'Completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-rose-50 text-rose-600 border-rose-200'
                         }`}>
-                          <ShieldCheck className="w-3 h-3" /> {trip.rating}
+                          {trip.status === 'Completed' ? <CheckCircle className="w-3 h-3" /> : <X className="w-3 h-3" />} {trip.status}
                         </span>
+                        {trip.status === 'Completed' && (
+                          <span className={`border px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 ${
+                            trip.rating === 'Perfect' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-amber-50 text-amber-600 border-amber-200'
+                          }`}>
+                            <ShieldCheck className="w-3 h-3" /> {trip.rating}
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td className="py-4 px-6 text-right">
@@ -236,6 +278,13 @@ export default function TrackingPage() {
                     </td>
                   </tr>
                 ))}
+                {MOCK_HISTORY_TRIPS.filter(t => historyFilter === 'All' || t.status === historyFilter).length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="py-12 text-center text-slate-500 text-sm">
+                      No history trips match this filter.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
