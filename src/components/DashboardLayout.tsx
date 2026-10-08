@@ -3,6 +3,8 @@ import { NavLink, useLocation, useOutlet, useNavigate } from 'react-router-dom';
 import { Layers, Map, Compass, MonitorStop, LineChart, LogOut, Menu, X, Settings } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
+import { TopHeader } from './TopHeader';
+import { RefreshCcw } from 'lucide-react';
 
 export default function DashboardLayout() {
   const { logout } = useAuth();
@@ -184,6 +186,16 @@ export default function DashboardLayout() {
 
         {/* Main Dashboard Content Area */}
         <main className="flex-1 flex flex-col min-w-0 bg-white overflow-hidden relative">
+          
+          <TopHeader 
+            searchPlaceholder="Search active trucks, tokens, or routes..."
+            actionButton={
+              <button className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-slate-200">
+                <RefreshCcw className="w-3.5 h-3.5" /> Force Fleet Sync
+              </button>
+            }
+          />
+
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
