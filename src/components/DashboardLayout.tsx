@@ -12,6 +12,8 @@ export default function DashboardLayout() {
   const location = useLocation();
   const outlet = useOutlet();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncProgress, setSyncProgress] = useState(0);
 
   // Close mobile menu when navigating
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
@@ -190,8 +192,27 @@ export default function DashboardLayout() {
           <TopHeader 
             searchPlaceholder="Search active trucks, tokens, or routes..."
             actionButton={
-              <button className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-slate-200">
-                <RefreshCcw className="w-3.5 h-3.5" /> Force Fleet Sync
+              <button 
+                onClick={() => {
+                  if(!isSyncing) {
+                    setIsSyncing(true);
+                    setSyncProgress(0);
+                    let progress = 0;
+                    const interval = setInterval(() => {
+                      progress += Math.floor(Math.random() * 15) + 5;
+                      if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(interval);
+                        setTimeout(() => setIsSyncing(false), 800);
+                      }
+                      setSyncProgress(progress);
+                    }, 300);
+                  }
+                }}
+                disabled={isSyncing}
+                className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-slate-200 disabled:opacity-50"
+              >
+                <RefreshCcw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} /> Force Fleet Sync
               </button>
             }
           />
@@ -208,6 +229,70 @@ export default function DashboardLayout() {
               {outlet}
             </motion.div>
           </AnimatePresence>
+
+          {/* Sync Modal Overlay */}
+          <AnimatePresence>
+            {isSyncing && (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                <motion.div 
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
+                  className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+                />
+                <motion.div 
+                  initial={{ scale: 0.9, opacity: 0, y: 20 }} 
+                  animate={{ scale: 1, opacity: 1, y: 0 }} 
+                  exit={{ scale: 0.9, opacity: 0, y: 20 }} 
+                  className="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl relative z-10 flex flex-col items-center text-center overflow-hidden border border-slate-100"
+                >
+                  <div className="absolute top-0 left-0 w-full h-1 bg-slate-100">
+                    <motion.div 
+                      className="h-full bg-emerald-500" 
+                      initial={{ width: 0 }} 
+                      animate={{ width: `${syncProgress}%` }} 
+                      transition={{ ease: "linear" }}
+                    />
+                  </div>
+                  
+                  <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-slate-100 relative">
+                    <RefreshCcw className="w-8 h-8 text-indigo-600 animate-spin" />
+                    {syncProgress === 100 && (
+                      <motion.div 
+                        initial={{ scale: 0 }} animate={{ scale: 1 }} 
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center text-white border-2 border-white shadow-sm"
+                      >
+                        <div className="w-3 h-3 rounded-full bg-white/30 animate-pulse"></div>
+                      </motion.div>
+                    )}
+                  </div>
+
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">
+                    {syncProgress === 100 ? 'Sync Complete!' : 'Force Fleet Sync'}
+                  </h3>
+                  <p className="text-sm text-slate-500 mb-6">
+                    {syncProgress === 100 
+                      ? 'All active telemetry and driver profiles have been successfully updated.' 
+                      : 'Connecting to satellite network to pull live telemetry data from active fleet...'
+                    }
+                  </p>
+
+                  <div className="w-full bg-slate-50 rounded-xl p-4 border border-slate-100">
+                    <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                      <span>Progress</span>
+                      <span className="text-indigo-600">{syncProgress}%</span>
+                    </div>
+                    <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                      <motion.div 
+                        className="h-full bg-indigo-500"
+                        initial={{ width: 0 }} animate={{ width: `${syncProgress}%` }}
+                        transition={{ ease: "linear" }}
+                      />
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>
+
         </main>
     </motion.div>
   );
