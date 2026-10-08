@@ -397,99 +397,211 @@ export default function TrackingPage() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }} 
               animate={{ scale: 1, opacity: 1, y: 0 }} 
               exit={{ scale: 0.95, opacity: 0, y: 20 }} 
-              className="bg-slate-50 rounded-[28px] w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl relative z-10 flex flex-col border border-slate-200/50"
+              className="bg-slate-100 rounded-[20px] w-full max-w-6xl h-[85vh] shadow-2xl relative z-10 flex flex-col border border-slate-300 overflow-hidden"
             >
-              {/* Header */}
-              <div className="sticky top-0 bg-white/80 backdrop-blur-xl border-b border-slate-200 p-6 sm:px-8 flex justify-between items-center z-20">
+              {/* Power BI Header */}
+              <div className="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center z-20 shrink-0">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xl shadow-lg shadow-indigo-200">
+                  <div className="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-md">
                     {selectedDriver.name.split(' ').map(n => n[0]).join('')}
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-slate-900 leading-tight">{selectedDriver.name}</h2>
-                    <p className="text-sm font-mono text-slate-500">{selectedDriver.id} • {selectedDriver.phone}</p>
+                    <h2 className="text-xl font-bold text-slate-900 leading-tight flex items-center gap-2">
+                      {selectedDriver.name} Dashboard
+                      <span className="bg-slate-100 text-slate-500 text-[10px] px-2 py-0.5 rounded border border-slate-200 uppercase">PowerBI View</span>
+                    </h2>
+                    <p className="text-xs font-mono text-slate-500 mt-0.5">ID: {selectedDriver.id} | Contact: {selectedDriver.phone} | Last Sync: Just Now</p>
                   </div>
                 </div>
-                <button onClick={() => setSelectedDriver(null)} className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-xl transition-colors"><X className="w-6 h-6" /></button>
+                <div className="flex items-center gap-3">
+                  <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-sm">
+                    <FileSpreadsheet className="w-3.5 h-3.5" /> Export Data
+                  </button>
+                  <button onClick={() => setSelectedDriver(null)} className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-lg transition-colors"><X className="w-5 h-5" /></button>
+                </div>
               </div>
 
-              {/* Dashboard Content */}
-              <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Dashboard Content - Fixed Height Grid */}
+              <div className="flex-1 p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 overflow-hidden bg-slate-100/50">
                 
-                {/* KPI Cards */}
-                <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-2">
-                    <div className="flex items-center gap-2 text-slate-500"><Truck className="w-4 h-4" /> <span className="text-xs font-bold uppercase">Total Trips</span></div>
-                    <span className="text-3xl font-bold text-slate-900">{selectedDriver.trips}</span>
-                  </div>
-                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-2">
-                    <div className="flex items-center gap-2 text-emerald-500"><ShieldCheck className="w-4 h-4" /> <span className="text-xs font-bold uppercase">On-Time Score</span></div>
-                    <span className="text-3xl font-bold text-slate-900">{selectedDriver.onTimeScore}</span>
-                  </div>
-                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-2">
-                    <div className="flex items-center gap-2 text-amber-500"><BarChart3 className="w-4 h-4" /> <span className="text-xs font-bold uppercase">Rating</span></div>
-                    <span className="text-3xl font-bold text-slate-900">{selectedDriver.rating} <span className="text-lg text-slate-400">/ 5.0</span></span>
-                  </div>
-                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-2">
-                    <div className="flex items-center gap-2 text-rose-500"><AlertTriangle className="w-4 h-4" /> <span className="text-xs font-bold uppercase">Incidents</span></div>
-                    <span className="text-3xl font-bold text-slate-900">{selectedDriver.incidents}</span>
-                  </div>
-                </div>
-
-                {/* Performance Chart Placeholder */}
-                <div className="md:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col min-h-[300px]">
-                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-6 flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-indigo-500" /> 6-Month Delivery Efficiency
-                  </h3>
-                  <div className="flex-1 flex items-end gap-2 justify-between pt-10">
-                    {[40, 70, 65, 90, 85, 100].map((h, i) => (
-                      <div key={i} className="w-full relative flex flex-col items-center group">
-                        <motion.div 
-                          initial={{ height: 0 }} animate={{ height: `${h}%` }} transition={{ duration: 1, delay: i * 0.1 }}
-                          className="w-full bg-indigo-500 rounded-t-md hover:bg-indigo-400 transition-colors"
-                        />
-                        <span className="mt-3 text-xs font-bold text-slate-400">{['Sep','Oct','Nov','Dec','Jan','Feb'][i]}</span>
+                {/* LEFT COLUMN (KPIs & Charts) - 8 Cols */}
+                <div className="lg:col-span-8 flex flex-col gap-4 overflow-hidden">
+                  
+                  {/* Top KPIs */}
+                  <div className="grid grid-cols-4 gap-4 shrink-0">
+                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                      <div className="flex items-center justify-between text-slate-500 mb-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider">Total Volume</span>
+                        <Truck className="w-4 h-4 text-indigo-500" />
                       </div>
-                    ))}
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-bold text-slate-900">{selectedDriver.trips}</span>
+                        <span className="text-xs text-emerald-500 font-bold">+12%</span>
+                      </div>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                      <div className="flex items-center justify-between text-slate-500 mb-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider">SLA Score</span>
+                        <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                      </div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-bold text-slate-900">{selectedDriver.onTimeScore}</span>
+                        <span className="text-xs text-emerald-500 font-bold">+1.2%</span>
+                      </div>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                      <div className="flex items-center justify-between text-slate-500 mb-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider">Driver Rating</span>
+                        <BarChart3 className="w-4 h-4 text-amber-500" />
+                      </div>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-2xl font-bold text-slate-900">{selectedDriver.rating}</span>
+                        <span className="text-sm font-bold text-slate-400">/5.0</span>
+                      </div>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                      <div className="flex items-center justify-between text-slate-500 mb-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider">Risk / Incidents</span>
+                        <AlertTriangle className="w-4 h-4 text-rose-500" />
+                      </div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-bold text-slate-900">{selectedDriver.incidents}</span>
+                        <span className="text-xs text-slate-400 font-bold">Stable</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Main Charts Area */}
+                  <div className="flex-1 grid grid-cols-2 gap-4 min-h-0">
+                    
+                    {/* Bar Chart: 6 Month Volume */}
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col">
+                      <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">6-Month Dispatch Volume</h3>
+                        <TrendingUp className="w-4 h-4 text-indigo-400" />
+                      </div>
+                      <div className="flex-1 relative">
+                        {/* Grid Lines */}
+                        <div className="absolute inset-0 flex flex-col justify-between border-l border-b border-slate-200 pb-6 pl-2">
+                          {[100, 75, 50, 25, 0].map(val => (
+                            <div key={val} className="w-full border-t border-slate-100 flex items-center relative">
+                              <span className="absolute -left-6 text-[9px] text-slate-400 font-mono">{val}</span>
+                            </div>
+                          ))}
+                        </div>
+                        {/* Bars */}
+                        <div className="absolute inset-0 ml-4 mb-6 flex items-end justify-around pt-2">
+                          {[40, 70, 65, 90, 85, 100].map((h, i) => (
+                            <div key={i} className="relative flex flex-col items-center group w-8">
+                              <motion.div 
+                                initial={{ height: 0 }} 
+                                animate={{ height: `${h}%` }} 
+                                transition={{ duration: 1, delay: i * 0.1 }}
+                                className="w-full bg-indigo-500 rounded-t-sm hover:bg-indigo-400 transition-colors shadow-sm relative"
+                              >
+                                {/* Tooltip */}
+                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                                  {h} Trips
+                                </div>
+                              </motion.div>
+                              <span className="absolute -bottom-6 text-[10px] font-bold text-slate-500">{['Sep','Oct','Nov','Dec','Jan','Feb'][i]}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Donut Chart: SLA Compliance */}
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col items-center justify-center relative">
+                      <div className="absolute top-5 left-5 right-5 flex justify-between items-center">
+                        <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">SLA Compliance Breakdown</h3>
+                        <Activity className="w-4 h-4 text-emerald-400" />
+                      </div>
+                      
+                      {/* SVG Donut */}
+                      <div className="relative w-40 h-40 mt-6">
+                        <svg className="w-full h-full transform -rotate-90">
+                          <circle cx="80" cy="80" r="70" fill="transparent" stroke="#F1F5F9" strokeWidth="20" />
+                          <motion.circle 
+                            cx="80" cy="80" r="70" 
+                            fill="transparent" 
+                            stroke="#10B981" 
+                            strokeWidth="20" 
+                            strokeDasharray="439.8" 
+                            initial={{ strokeDashoffset: 439.8 }}
+                            animate={{ strokeDashoffset: 439.8 - (439.8 * 0.96) }} // 96%
+                            transition={{ duration: 1.5, ease: "easeOut" }}
+                            className="drop-shadow-sm"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <span className="text-3xl font-bold text-slate-900">96%</span>
+                          <span className="text-[9px] font-bold text-slate-400 uppercase">On-Time</span>
+                        </div>
+                      </div>
+                      
+                      <div className="w-full mt-6 grid grid-cols-2 gap-2 text-center">
+                        <div className="bg-emerald-50 rounded-lg p-2 border border-emerald-100">
+                          <p className="text-[10px] font-bold text-emerald-600 uppercase">On-Time</p>
+                          <p className="font-mono font-bold text-emerald-700">{selectedDriver.trips}</p>
+                        </div>
+                        <div className="bg-rose-50 rounded-lg p-2 border border-rose-100">
+                          <p className="text-[10px] font-bold text-rose-600 uppercase">Delayed</p>
+                          <p className="font-mono font-bold text-rose-700">{selectedDriver.incidents}</p>
+                        </div>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
 
-                {/* Right Panel Stats */}
-                <div className="md:col-span-1 flex flex-col gap-6">
-                  <div className="bg-gradient-to-br from-indigo-900 to-slate-900 p-6 rounded-2xl text-white shadow-lg relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-4 opacity-10"><Activity className="w-24 h-24" /></div>
-                    <h3 className="text-xs font-bold text-indigo-300 uppercase tracking-wider mb-1">Current Status</h3>
-                    <div className="text-2xl font-bold mb-4 flex items-center gap-2">
-                      <span className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+                {/* RIGHT COLUMN - 4 Cols */}
+                <div className="lg:col-span-4 flex flex-col gap-4 overflow-hidden">
+                  
+                  {/* Status Card */}
+                  <div className="bg-slate-900 rounded-xl p-5 text-white shadow-md relative overflow-hidden shrink-0">
+                    <div className="absolute -right-4 -bottom-4 opacity-10"><Map className="w-32 h-32" /></div>
+                    <h3 className="text-[10px] font-bold text-indigo-300 uppercase tracking-wider mb-2">Live Fleet Status</h3>
+                    <div className="text-2xl font-bold mb-5 flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
                       {selectedDriver.status}
                     </div>
-                    <div className="space-y-3 pt-4 border-t border-indigo-800/50">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-indigo-200">Hours Driven (YTD)</span>
+                    <div className="space-y-3 pt-4 border-t border-slate-700/50">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-slate-400 text-xs">Hours Driven (YTD)</span>
                         <span className="font-mono font-bold">{selectedDriver.hoursDriven}h</span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-indigo-200">Compliance Rate</span>
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-slate-400 text-xs">Compliance Rate</span>
                         <span className="font-mono font-bold text-emerald-400">100%</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex-1">
-                    <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">Recent Activity</h3>
-                    <div className="space-y-4">
-                      {[1,2,3].map(i => (
-                        <div key={i} className="flex gap-3 items-start">
-                          <div className="w-2 h-2 rounded-full bg-slate-300 mt-1.5"></div>
-                          <div>
-                            <p className="text-xs font-bold text-slate-700">Completed Trip TRK-09{i}</p>
-                            <p className="text-[10px] text-slate-400 mt-0.5">{i} days ago • Perfect Rating</p>
+                  {/* Recent Activity Log (Scrollable, hidden scrollbar) */}
+                  <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-0 flex flex-col flex-1 min-h-0">
+                    <div className="p-4 border-b border-slate-100 bg-slate-50/50 shrink-0">
+                      <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Detailed Activity Log</h3>
+                    </div>
+                    <div className="p-4 flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden">
+                      <div className="space-y-4">
+                        {[...Array(10)].map((_, i) => (
+                          <div key={i} className="flex gap-3 items-start group">
+                            <div className="flex flex-col items-center">
+                              <div className="w-2 h-2 rounded-full bg-indigo-500 mt-1.5 ring-4 ring-indigo-50 group-hover:bg-indigo-600 transition-colors"></div>
+                              {i !== 9 && <div className="w-px h-10 bg-slate-100 mt-1"></div>}
+                            </div>
+                            <div className="pb-2">
+                              <p className="text-xs font-bold text-slate-800">Completed Trip TRK-09{i}</p>
+                              <p className="text-[10px] text-slate-500 mt-0.5">{i === 0 ? 'Today' : `${i} days ago`} • Perfect Rating</p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
+
               </div>
             </motion.div>
           </div>
