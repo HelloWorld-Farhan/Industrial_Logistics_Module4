@@ -1,34 +1,9 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { MonitorStop, AlertTriangle, ArrowRightLeft, ArrowDownToLine, ArrowUpFromLine, CheckCircle, Factory, Activity, Zap, RefreshCw, Database, Network, ServerCog } from 'lucide-react';
 
 export default function ConsolidatedTrackerPage() {
   const [congestionResolved, setCongestionResolved] = useState(false);
   const [isResolving, setIsResolving] = useState(false);
-
-  // Generate some dummy dots for the map
-  const [inboundDots, setInboundDots] = useState<Array<{id: number, x: number, y: number, delay: number, duration: number}>>([]);
-  const [outboundDots, setOutboundDots] = useState<Array<{id: number, x: number, y: number, delay: number, duration: number}>>([]);
-
-  useEffect(() => {
-    // Generate initial static positions for dots
-    const inDots = Array.from({ length: 12 }).map((_, i) => ({
-      id: i,
-      x: 5 + Math.random() * 20, // Start from far left
-      y: 10 + Math.random() * 80,
-      delay: Math.random() * 5,
-      duration: 15 + Math.random() * 10
-    }));
-    const outDots = Array.from({ length: 10 }).map((_, i) => ({
-      id: i,
-      x: 75 + Math.random() * 20, // Start from far right
-      y: 10 + Math.random() * 80,
-      delay: Math.random() * 5,
-      duration: 15 + Math.random() * 10
-    }));
-    setInboundDots(inDots);
-    setOutboundDots(outDots);
-  }, []);
 
   const handleResolveCongestion = () => {
     setIsResolving(true);
@@ -125,90 +100,132 @@ export default function ConsolidatedTrackerPage() {
                 </div>
               </div>
               
-              {/* Map Canvas */}
-              <div className="flex-1 bg-slate-900 relative overflow-hidden flex items-center justify-center">
-                {/* Subtle Grid / Radar Overlay */}
+              {/* Power BI Style Network Graph Canvas */}
+              <div className="flex-1 bg-white relative overflow-hidden flex items-center justify-center p-8">
+                {/* Subtle Dot Grid */}
                 <div 
-                  className="absolute inset-0 opacity-10"
+                  className="absolute inset-0 opacity-[0.4]"
                   style={{
-                    backgroundImage: 'linear-gradient(#64748B 1px, transparent 1px), linear-gradient(90deg, #64748B 1px, transparent 1px)',
-                    backgroundSize: '40px 40px'
+                    backgroundImage: 'radial-gradient(#94A3B8 1px, transparent 1px)',
+                    backgroundSize: '24px 24px'
                   }}
                 />
 
-                {/* Radar Sweep */}
-                <div className="absolute top-1/2 left-1/2 w-[800px] h-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-700/30"></div>
-                <div className="absolute top-1/2 left-1/2 w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-700/30"></div>
-                <div className="absolute top-1/2 left-1/2 w-[400px] h-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-600/40"></div>
-                <div className="absolute top-1/2 left-1/2 w-[200px] h-[200px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-slate-500/50"></div>
-                
-                <div className="absolute top-1/2 left-1/2 w-[400px] h-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full border-t-2 border-r-2 border-indigo-500/50 animate-[spin_4s_linear_infinite]">
-                  <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-tr from-transparent via-indigo-500/10 to-transparent rounded-full blur-md"></div>
-                </div>
+                {/* SVG Connections (Flows) */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+                  <defs>
+                    <linearGradient id="inboundGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#818CF8" stopOpacity="0.2" />
+                      <stop offset="100%" stopColor="#4F46E5" stopOpacity="0.6" />
+                    </linearGradient>
+                    <linearGradient id="outboundGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#4F46E5" stopOpacity="0.6" />
+                      <stop offset="100%" stopColor="#10B981" stopOpacity="0.2" />
+                    </linearGradient>
+                  </defs>
 
-                {/* Central Factory */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center">
-                  <div className="bg-slate-800 border border-slate-700 p-4 rounded-2xl shadow-[0_0_40px_rgba(99,102,241,0.15)] flex flex-col items-center gap-2 backdrop-blur-xl relative">
-                    <div className="absolute inset-0 bg-indigo-500/10 rounded-2xl animate-pulse"></div>
-                    <Factory className="w-8 h-8 text-indigo-400 relative z-10" />
-                    <span className="text-white text-xs font-bold uppercase tracking-wider relative z-10">Central Factory</span>
-                    <span className="text-slate-400 text-[10px] font-mono relative z-10">LOADING DOCK 01</span>
+                  {/* Inbound Flows */}
+                  <path d="M 15% 25% C 30% 25%, 35% 50%, 50% 50%" fill="none" stroke="url(#inboundGrad)" strokeWidth="4" />
+                  <path d="M 15% 50% C 30% 50%, 35% 50%, 50% 50%" fill="none" stroke="url(#inboundGrad)" strokeWidth="6" />
+                  <path d="M 15% 75% C 30% 75%, 35% 50%, 50% 50%" fill="none" stroke="url(#inboundGrad)" strokeWidth="3" />
+                  
+                  {/* Outbound Flows */}
+                  <path d="M 50% 50% C 65% 50%, 70% 35%, 85% 35%" fill="none" stroke="url(#outboundGrad)" strokeWidth="5" />
+                  <path d="M 50% 50% C 65% 50%, 70% 65%, 85% 65%" fill="none" stroke="url(#outboundGrad)" strokeWidth="4" />
+
+                  {/* Animated Data Packets (Inbound) */}
+                  <circle r="4" fill="#4F46E5">
+                    <animateMotion dur="3s" repeatCount="indefinite" path="M 15% 25% C 30% 25%, 35% 50%, 50% 50%" />
+                  </circle>
+                  <circle r="5" fill="#4F46E5">
+                    <animateMotion dur="2.5s" repeatCount="indefinite" path="M 15% 50% C 30% 50%, 35% 50%, 50% 50%" />
+                  </circle>
+                  <circle r="3" fill="#4F46E5">
+                    <animateMotion dur="4s" repeatCount="indefinite" path="M 15% 75% C 30% 75%, 35% 50%, 50% 50%" />
+                  </circle>
+
+                  {/* Animated Data Packets (Outbound) */}
+                  <circle r="5" fill="#10B981">
+                    <animateMotion dur="2s" repeatCount="indefinite" path="M 50% 50% C 65% 50%, 70% 35%, 85% 35%" />
+                  </circle>
+                  <circle r="4" fill="#10B981">
+                    <animateMotion dur="3.5s" repeatCount="indefinite" path="M 50% 50% C 65% 50%, 70% 65%, 85% 65%" />
+                  </circle>
+                </svg>
+
+                {/* HTML Nodes (Power BI Style Tooltips & Badges) */}
+                
+                {/* Suppliers (Left) */}
+                <div className="absolute top-[25%] left-[15%] -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center group">
+                  <div className="w-12 h-12 bg-white rounded-xl shadow-md border border-slate-200 flex items-center justify-center relative transition-transform group-hover:scale-110">
+                    <Database className="w-5 h-5 text-indigo-500" />
+                    <div className="absolute -top-2 -right-2 bg-indigo-100 text-indigo-700 text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-indigo-200">8</div>
+                  </div>
+                  <div className="mt-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded shadow-sm border border-slate-100 text-center">
+                    <p className="text-[10px] font-bold text-slate-700">APAC Suppliers</p>
+                    <p className="text-[9px] text-slate-400 font-mono">Vol: 4.2k tons</p>
                   </div>
                 </div>
 
-                {/* Highway Lines */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20">
-                  <path d="M 0 50% L 100% 50%" stroke="#94A3B8" strokeWidth="2" strokeDasharray="10,10" />
-                  <path d="M 50% 0 L 50% 100%" stroke="#94A3B8" strokeWidth="2" strokeDasharray="10,10" />
-                  <path d="M 20% 0 Q 30% 50%, 50% 50%" stroke="#94A3B8" strokeWidth="2" strokeDasharray="5,5" fill="none" />
-                  <path d="M 80% 100% Q 70% 50%, 50% 50%" stroke="#94A3B8" strokeWidth="2" strokeDasharray="5,5" fill="none" />
-                </svg>
+                <div className="absolute top-[50%] left-[15%] -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center group">
+                  <div className="w-12 h-12 bg-white rounded-xl shadow-md border border-slate-200 flex items-center justify-center relative transition-transform group-hover:scale-110">
+                    <Database className="w-5 h-5 text-indigo-500" />
+                    <div className="absolute -top-2 -right-2 bg-indigo-100 text-indigo-700 text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-indigo-200">12</div>
+                  </div>
+                  <div className="mt-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded shadow-sm border border-slate-100 text-center">
+                    <p className="text-[10px] font-bold text-slate-700">EMEA Suppliers</p>
+                    <p className="text-[9px] text-slate-400 font-mono">Vol: 8.5k tons</p>
+                  </div>
+                </div>
 
-                {/* Inbound Dots (Blue) */}
-                {inboundDots.map((dot) => (
-                  <motion.div
-                    key={`in-${dot.id}`}
-                    initial={{ left: `${dot.x}%`, top: `${dot.y}%`, opacity: 0 }}
-                    animate={{ 
-                      left: [`${dot.x}%`, '45%'], 
-                      top: [`${dot.y}%`, '50%'],
-                      opacity: [0, 1, 1, 0]
-                    }}
-                    transition={{ 
-                      duration: dot.duration, 
-                      repeat: Infinity,
-                      ease: "linear",
-                      delay: dot.delay
-                    }}
-                    className="absolute w-3 h-3 rounded-full bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,1)] z-10 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
-                  >
-                    <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                    <div className="absolute -inset-2 rounded-full border border-indigo-400/50 animate-ping" />
-                  </motion.div>
-                ))}
+                <div className="absolute top-[75%] left-[15%] -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center group">
+                  <div className="w-12 h-12 bg-white rounded-xl shadow-md border border-slate-200 flex items-center justify-center relative transition-transform group-hover:scale-110">
+                    <Database className="w-5 h-5 text-indigo-500" />
+                    <div className="absolute -top-2 -right-2 bg-indigo-100 text-indigo-700 text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-indigo-200">4</div>
+                  </div>
+                  <div className="mt-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded shadow-sm border border-slate-100 text-center">
+                    <p className="text-[10px] font-bold text-slate-700">LATAM Suppliers</p>
+                    <p className="text-[9px] text-slate-400 font-mono">Vol: 1.1k tons</p>
+                  </div>
+                </div>
 
-                {/* Outbound Dots (Green) */}
-                {outboundDots.map((dot) => (
-                  <motion.div
-                    key={`out-${dot.id}`}
-                    initial={{ left: '55%', top: '50%', opacity: 0 }}
-                    animate={{ 
-                      left: ['55%', `${dot.x}%`], 
-                      top: ['50%', `${dot.y}%`],
-                      opacity: [0, 1, 1, 0]
-                    }}
-                    transition={{ 
-                      duration: dot.duration, 
-                      repeat: Infinity,
-                      ease: "linear",
-                      delay: dot.delay
-                    }}
-                    className="absolute w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,1)] z-10 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
-                  >
-                    <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                    <div className="absolute -inset-2 rounded-full border border-emerald-400/50 animate-ping" />
-                  </motion.div>
-                ))}
+                {/* Central Hub */}
+                <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center">
+                  <div className="bg-slate-900 border-4 border-white p-5 rounded-2xl shadow-xl flex flex-col items-center gap-2 relative">
+                    {/* Ring glow */}
+                    <div className="absolute -inset-4 border-2 border-indigo-500/20 rounded-full animate-[spin_4s_linear_infinite] border-t-indigo-500/80" />
+                    <div className="absolute -inset-6 border border-emerald-500/10 rounded-full animate-[spin_6s_linear_infinite_reverse] border-b-emerald-500/50" />
+                    
+                    <Factory className="w-8 h-8 text-white relative z-10" />
+                    <div className="text-center relative z-10">
+                      <p className="text-white text-[11px] font-bold uppercase tracking-widest">Central Hub</p>
+                      <p className="text-indigo-300 text-[10px] font-mono mt-0.5">Processing 13.8k/day</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Customers (Right) */}
+                <div className="absolute top-[35%] left-[85%] -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center group">
+                  <div className="w-12 h-12 bg-white rounded-xl shadow-md border border-slate-200 flex items-center justify-center relative transition-transform group-hover:scale-110">
+                    <MonitorStop className="w-5 h-5 text-emerald-500" />
+                    <div className="absolute -top-2 -right-2 bg-emerald-100 text-emerald-700 text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-emerald-200">9</div>
+                  </div>
+                  <div className="mt-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded shadow-sm border border-slate-100 text-center">
+                    <p className="text-[10px] font-bold text-slate-700">East Coast Dist.</p>
+                    <p className="text-[9px] text-slate-400 font-mono">Fulfillment: 98%</p>
+                  </div>
+                </div>
+
+                <div className="absolute top-[65%] left-[85%] -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center group">
+                  <div className="w-12 h-12 bg-white rounded-xl shadow-md border border-slate-200 flex items-center justify-center relative transition-transform group-hover:scale-110">
+                    <MonitorStop className="w-5 h-5 text-emerald-500" />
+                    <div className="absolute -top-2 -right-2 bg-emerald-100 text-emerald-700 text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-emerald-200">9</div>
+                  </div>
+                  <div className="mt-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded shadow-sm border border-slate-100 text-center">
+                    <p className="text-[10px] font-bold text-slate-700">West Coast Dist.</p>
+                    <p className="text-[9px] text-slate-400 font-mono">Fulfillment: 94%</p>
+                  </div>
+                </div>
 
               </div>
             </div>
