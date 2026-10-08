@@ -434,6 +434,16 @@ export default function RouteManagementPage() {
                     </div>
                   </motion.div>
                   
+
+                    </div>
+                  </div>
+
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+
                   {/* AI Routing History Section */}
                   <div className="mt-8">
                     <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2 mb-4">
@@ -496,14 +506,6 @@ export default function RouteManagementPage() {
                           </tbody>
                         </table>
                       </div>
-                    </div>
-                  </div>
-
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
       </div>
 
       {/* Custom Booking Modal UI */}
