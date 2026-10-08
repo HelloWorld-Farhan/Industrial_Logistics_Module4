@@ -433,79 +433,77 @@ export default function RouteManagementPage() {
                       </div>
                     </div>
                   </motion.div>
-                  
-
-                    </div>
-                  </div>
-
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
         </div>
 
-                  {/* AI Routing History Section */}
-                  <div className="mt-8">
-                    <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2 mb-4">
-                      <FileText className="w-4 h-4 text-slate-400" /> Past AI Routing Evaluations
-                    </h3>
-                    
-                    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm whitespace-nowrap">
-                          <thead className="bg-slate-50 border-b border-slate-100 text-xs uppercase font-bold text-slate-500">
-                            <tr>
-                              <th className="px-6 py-4">Evaluation ID</th>
-                              <th className="px-6 py-4">Cargo Details</th>
-                              <th className="px-6 py-4">Destination</th>
-                              <th className="px-6 py-4">AI Recommendation</th>
-                              <th className="px-6 py-4">Selected Route</th>
-                              <th className="px-6 py-4">Status</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-100 text-slate-700">
-                            <tr className="hover:bg-slate-50 transition-colors">
-                              <td className="px-6 py-4 font-mono text-xs font-bold text-indigo-600">EVL-99201</td>
-                              <td className="px-6 py-4">
-                                <p className="font-bold text-slate-900">Electronics (Lithium-ion)</p>
-                                <p className="text-xs text-slate-500">450 kg</p>
-                              </td>
-                              <td className="px-6 py-4">Frankfurt, Germany</td>
-                              <td className="px-6 py-4"><span className="text-sky-600 font-bold">Air Freight</span></td>
-                              <td className="px-6 py-4">Air Freight</td>
-                              <td className="px-6 py-4">
-                                <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-700 uppercase tracking-wider">Completed</span>
-                              </td>
-                            </tr>
-                            <tr className="hover:bg-slate-50 transition-colors">
-                              <td className="px-6 py-4 font-mono text-xs font-bold text-indigo-600">EVL-99184</td>
-                              <td className="px-6 py-4">
-                                <p className="font-bold text-slate-900">Industrial Chemicals</p>
-                                <p className="text-xs text-slate-500">12,000 kg</p>
-                              </td>
-                              <td className="px-6 py-4">Rotterdam, Netherlands</td>
-                              <td className="px-6 py-4"><span className="text-emerald-600 font-bold">Sea Freight</span></td>
-                              <td className="px-6 py-4">Sea Freight</td>
-                              <td className="px-6 py-4">
-                                <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-amber-100 text-amber-700 uppercase tracking-wider">In Transit</span>
-                              </td>
-                            </tr>
-                            <tr className="hover:bg-slate-50 transition-colors">
-                              <td className="px-6 py-4 font-mono text-xs font-bold text-indigo-600">EVL-99112</td>
-                              <td className="px-6 py-4">
-                                <p className="font-bold text-slate-900">Cold-chain Pharmaceuticals</p>
-                                <p className="text-xs text-slate-500">80 kg</p>
-                              </td>
-                              <td className="px-6 py-4">Dubai, UAE</td>
-                              <td className="px-6 py-4"><span className="text-sky-600 font-bold">Air Freight</span></td>
-                              <td className="px-6 py-4">Air Freight</td>
-                              <td className="px-6 py-4">
-                                <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-700 uppercase tracking-wider">Completed</span>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
+        {/* AI Routing History Section - NOW ALWAYS VISIBLE */}
+        <div className="mt-8">
+          <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2 mb-4">
+            <FileText className="w-4 h-4 text-slate-400" /> Past AI Routing Evaluations
+          </h3>
+          
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm whitespace-nowrap">
+                <thead className="bg-slate-50 border-b border-slate-100 text-xs uppercase font-bold text-slate-500">
+                  <tr>
+                    <th className="px-6 py-4">Evaluation ID</th>
+                    <th className="px-6 py-4">Cargo Details</th>
+                    <th className="px-6 py-4">Destination</th>
+                    <th className="px-6 py-4">AI Recommendation</th>
+                    <th className="px-6 py-4">Selected Route</th>
+                    <th className="px-6 py-4">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-700">
+                  <tr className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-4 font-mono text-xs font-bold text-indigo-600">EVL-99201</td>
+                    <td className="px-6 py-4">
+                      <p className="font-bold text-slate-900">Electronics (Lithium-ion)</p>
+                      <p className="text-xs text-slate-500">450 kg</p>
+                    </td>
+                    <td className="px-6 py-4">Frankfurt, Germany</td>
+                    <td className="px-6 py-4"><span className="text-sky-600 font-bold">Air Freight</span></td>
+                    <td className="px-6 py-4">Air Freight</td>
+                    <td className="px-6 py-4">
+                      <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-700 uppercase tracking-wider">Completed</span>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-4 font-mono text-xs font-bold text-indigo-600">EVL-99184</td>
+                    <td className="px-6 py-4">
+                      <p className="font-bold text-slate-900">Industrial Chemicals</p>
+                      <p className="text-xs text-slate-500">12,000 kg</p>
+                    </td>
+                    <td className="px-6 py-4">Rotterdam, Netherlands</td>
+                    <td className="px-6 py-4"><span className="text-emerald-600 font-bold">Sea Freight</span></td>
+                    <td className="px-6 py-4">Sea Freight</td>
+                    <td className="px-6 py-4">
+                      <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-amber-100 text-amber-700 uppercase tracking-wider">In Transit</span>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-4 font-mono text-xs font-bold text-indigo-600">EVL-99112</td>
+                    <td className="px-6 py-4">
+                      <p className="font-bold text-slate-900">Cold-chain Pharmaceuticals</p>
+                      <p className="text-xs text-slate-500">80 kg</p>
+                    </td>
+                    <td className="px-6 py-4">Dubai, UAE</td>
+                    <td className="px-6 py-4"><span className="text-sky-600 font-bold">Air Freight</span></td>
+                    <td className="px-6 py-4">Air Freight</td>
+                    <td className="px-6 py-4">
+                      <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-700 uppercase tracking-wider">Completed</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       {/* Custom Booking Modal UI */}
